@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  male   @map("male")
+  female @map("female")
+
+  @@map("genders")
+}
+
+enum ActivityFactor {
+  sedentary @map("1.2")
+  light     @map("1.375")
+  moderate  @map("1.55")
+  high      @map("1.725")
+}
+
+model User {
+  id         String  @id @default(uuid())
+  username   String  @unique
+  name       String
+  email      String? @unique
+  avatar_url String?
+
+  weight          Int?
+  height          Int?
+  age             Int?
+  gender          Gender?
+  activity_factor ActivityFactor?
+
+  created_at DateTime @default(now())
+
+  accounts Account[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+model Account {
+  id                  String  @id @default(cuid())
+  user_id             String
+  type                String
+  provider            String
+  provider_account_id String
+  refresh_token       String?
+  access_token        String?
+  expires_at          Int?
+  token_type          String?
+  scope               String?
+  id_token            String?
+  session_state       String?
+  user                User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_account_id])
+  @@map("accounts")
+}
+
+model Session {
+  id            String   @id @default(cuid())
+  session_token String   @unique
+  user_id       String
+  expires       DateTime
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
