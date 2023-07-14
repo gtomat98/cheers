@@ -2,7 +2,7 @@ import { ArrowRight } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Button, Form, FormAnnotation, Input } from './styles'
+import { Button, Container, Form, FormAnnotation, Input } from './styles'
 import { useRouter } from 'next/router'
 
 const ClaimUsernameFormSchema = z.object({
@@ -35,7 +35,7 @@ export function ClaimUserForm() {
   }
 
   return (
-    <>
+    <Container>
       <Form onSubmit={handleSubmit(handleClaimUsername)}>
         <Input type="text" placeholder="username" {...register('username')} />
 
@@ -51,6 +51,6 @@ export function ClaimUserForm() {
             : 'Digite o nome do usuário desejado'}
         </p>
       </FormAnnotation>
-    </>
+    </Container>
   )
 }

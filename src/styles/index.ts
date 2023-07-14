@@ -15,6 +15,11 @@ export const {
       orange: '#CE8D37',
       orangeLight: '#F9AA41',
 
+      red: '#c2331f',
+      redHover: '#e64529',
+
+      green: '#243d1e',
+
       white: '#FFFFFF',
       text: '#A9A9B2',
       textTitle: '#E7EDF4',

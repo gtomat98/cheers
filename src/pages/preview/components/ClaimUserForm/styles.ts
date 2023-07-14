@@ -1,12 +1,16 @@
 import { styled } from '@/styles'
 
+export const Container = styled('div', {
+  display: 'block',
+  width: '100%',
+})
+
 export const Form = styled('form', {
-  maxWidth: '100%',
-  width: 400,
+  maxWidth: 400,
   display: 'grid',
   gridTemplateColumns: '1fr auto',
   gap: 16,
-  padding: 16,
+  padding: 10,
 
   background: '$baseBox',
   borderRadius: 6,
@@ -25,6 +29,7 @@ export const Input = styled('input', {
   cursor: 'text',
 
   color: '$textTitle',
+  fontSize: 14,
 
   '&:focus': {
     outline: '2px solid $baseBorder',
@@ -35,10 +40,11 @@ export const Button = styled('button', {
   all: 'unset',
   minWidth: 120,
   borderRadius: 6,
-  padding: '16px 0px',
+  padding: '12px 0px',
 
   color: '$textTitle',
   fontWeight: 600,
+  fontSize: 14,
 
   display: 'flex',
   alignItems: 'center',
@@ -62,7 +68,9 @@ export const Button = styled('button', {
 })
 
 export const FormAnnotation = styled('div', {
+  marginTop: 12,
   p: {
+    fontSize: 12,
     color: '$text',
     opacity: 0.8,
   },

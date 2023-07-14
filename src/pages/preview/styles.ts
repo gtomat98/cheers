@@ -9,19 +9,34 @@ export const Container = styled('div', {
 
   overflow: 'hidden',
 
-  '@media (max-width:600px)': {
+  '@media (max-width:500px)': {
+    all: 'unset',
+    display: 'flex',
+    height: '100vh',
+    maxWidth: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+
+    div: {
+      '> p': {
+        fontSize: '1rem',
+      },
+    },
+
+    img: {
+      width: '90%',
+    },
   },
 })
 
 export const MainContainer = styled('div', {
   display: 'flex',
   alignItems: 'flex-start',
-  gap: '80px',
+  gap: '20px',
 })
 
 export const Hero = styled('div', {
+  width: '100%',
   maxWidth: 480,
   padding: '0 40px',
 
@@ -34,7 +49,7 @@ export const Hero = styled('div', {
   '> p': {
     fontFamily: '$roboto',
     fontSize: '1.5rem',
-    color: '$text',
+    color: '$textTitle',
   },
 })
 

@@ -3,8 +3,8 @@ import { shouldIncreaseOrDecreaseCalories } from '@/utils/shouldIncreaseOrDecrea
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { z } from 'zod'
-import { getMeals } from '../../../utils/getMeals'
 import { buildNextAuthOptions } from '../auth/[...nextauth].api'
+import { prisma } from '@/lib/prisma'
 
 const physicalInformationFormSchema = z.object({
   weight: z.number().min(20).max(160),
@@ -33,7 +33,7 @@ export default async function handler(
   )
 
   if (!session) {
-    return res.status(404).end()
+    return res.status(401).end()
   }
 
   const { age, height, weight, activityFactor, gender } =
@@ -63,10 +63,21 @@ export default async function handler(
     },
   }
 
-  const Meals = getMeals(1000)
+  await prisma.user.update({
+    where: {
+      id: session.user.id,
+    },
+
+    data: {
+      height,
+      weight,
+      gender,
+      age,
+      activity_factor: activityFactor,
+    },
+  })
 
   return res.status(200).json({
     calories: idealWeight[bodyMassIndex](),
-    Meals,
   })
 }

@@ -23,6 +23,7 @@ import {
   InputsContainer,
 } from './styles'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 
 const physicalInformationFormSchema = z.object({
   weight: z
@@ -58,6 +59,7 @@ export default function ConnectGoogle() {
   })
 
   const router = useRouter()
+  const session = useSession()
 
   async function handleForm(data: physicalInformationFormData) {
     const { age, gender, height, weight, activityFactor } = data
@@ -70,7 +72,7 @@ export default function ConnectGoogle() {
         gender,
       })
 
-      // await router.push('/home')
+      await router.push(`/${session.data?.user.username}`)
     } catch (err) {
       if (err instanceof AxiosError && err?.response?.data?.message) {
         alert(err.response.data.message)
