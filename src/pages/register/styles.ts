@@ -7,6 +7,8 @@ export const Container = styled('main', {
 })
 
 export const Header = styled('div', {
+  margin: 'auto',
+  maxWidth: '90%',
   padding: '0 0px',
 
   '> strong': {

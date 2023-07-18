@@ -1,10 +1,11 @@
-import { getBasalMetabolismRate } from '@/utils/getBasalMetabolismRate'
-import { shouldIncreaseOrDecreaseCalories } from '@/utils/shouldIncreaseOrDecreaseCalories'
+// import { getBasalMetabolismRate } from '@/utils/getBasalMetabolismRate'
+// import { shouldIncreaseOrDecreaseCalories } from '@/utils/shouldIncreaseOrDecreaseCalories'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getServerSession } from 'next-auth'
+// import { getServerSession } from 'next-auth'
 import { z } from 'zod'
-import { buildNextAuthOptions } from '../auth/[...nextauth].api'
+// import { buildNextAuthOptions } from '../auth/[...nextauth].api'
 import { prisma } from '@/lib/prisma'
+import { getToken } from 'next-auth/jwt'
 
 const physicalInformationFormSchema = z.object({
   weight: z.number().min(20).max(160),
@@ -26,11 +27,13 @@ export default async function handler(
     return res.status(405).end()
   }
 
-  const session = await getServerSession(
-    req,
-    res,
-    buildNextAuthOptions(req, res),
-  )
+  // const session = await getServerSession(
+  //   req,
+  //   res,
+  //   buildNextAuthOptions(req, res),
+  // )
+
+  const session = await getToken({ req })
 
   if (!session) {
     return res.status(401).end()
@@ -39,33 +42,33 @@ export default async function handler(
   const { age, height, weight, activityFactor, gender } =
     physicalInformationFormSchema.parse(req.body)
 
-  const totalCaloriesToMantain = getBasalMetabolismRate({
-    gender,
-    age,
-    height,
-    weight,
-    activityFactor,
-  })
+  // const totalCaloriesToMantain = getBasalMetabolismRate({
+  //   gender,
+  //   age,
+  //   height,
+  //   weight,
+  //   activityFactor,
+  // })
 
-  const bodyMassIndex = shouldIncreaseOrDecreaseCalories(height, weight)
+  // const bodyMassIndex = shouldIncreaseOrDecreaseCalories(height, weight)
 
-  const idealWeight = {
-    1() {
-      // eslint-disable-next-line prettier/prettier
-      return totalCaloriesToMantain - (totalCaloriesToMantain / 10)
-    },
-    [-1]() {
-      // eslint-disable-next-line prettier/prettier
-      return totalCaloriesToMantain + (totalCaloriesToMantain / 10)
-    },
-    0() {
-      return totalCaloriesToMantain
-    },
-  }
+  // const idealWeight = {
+  //   1() {
+  //     // eslint-disable-next-line prettier/prettier
+  //     return totalCaloriesToMantain - (totalCaloriesToMantain / 10)
+  //   },
+  //   [-1]() {
+  //     // eslint-disable-next-line prettier/prettier
+  //     return totalCaloriesToMantain + (totalCaloriesToMantain / 10)
+  //   },
+  //   0() {
+  //     return totalCaloriesToMantain
+  //   },
+  // }
 
   await prisma.user.update({
     where: {
-      id: session.user.id,
+      id: session.token.user.id,
     },
 
     data: {
@@ -78,6 +81,6 @@ export default async function handler(
   })
 
   return res.status(200).json({
-    calories: idealWeight[bodyMassIndex](),
+    username: session.token.user.username,
   })
 }

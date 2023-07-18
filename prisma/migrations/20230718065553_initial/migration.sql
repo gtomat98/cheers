@@ -12,14 +12,15 @@ CREATE TYPE "Meals" AS ENUM ('0', '1', '2', '3', '4');
 
 -- CreateTable
 CREATE TABLE "meals" (
-    "task_id" TEXT NOT NULL,
-    "weekday" "Weekdays" NOT NULL,
-    "meal" "Meals" NOT NULL,
+    "id" TEXT NOT NULL,
+    "tasklist_id" TEXT NOT NULL,
+    "task_id" TEXT,
     "user_id" TEXT NOT NULL,
     "completed" BOOLEAN NOT NULL,
-    "tasklist_id" TEXT NOT NULL,
+    "weekday" "Weekdays" NOT NULL,
+    "meal" "Meals" NOT NULL,
 
-    CONSTRAINT "meals_pkey" PRIMARY KEY ("task_id")
+    CONSTRAINT "meals_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -40,6 +41,7 @@ CREATE TABLE "users" (
     "email" TEXT,
     "avatar_url" TEXT,
     "verified" BOOLEAN NOT NULL DEFAULT false,
+    "role" TEXT,
     "weight" INTEGER,
     "height" INTEGER,
     "age" INTEGER,
@@ -94,7 +96,7 @@ CREATE UNIQUE INDEX "sessions_session_token_key" ON "sessions"("session_token");
 ALTER TABLE "meals" ADD CONSTRAINT "meals_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "foods" ADD CONSTRAINT "foods_meal_id_fkey" FOREIGN KEY ("meal_id") REFERENCES "meals"("task_id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "foods" ADD CONSTRAINT "foods_meal_id_fkey" FOREIGN KEY ("meal_id") REFERENCES "meals"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

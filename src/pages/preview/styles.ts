@@ -17,11 +17,7 @@ export const Container = styled('div', {
     alignItems: 'center',
     justifyContent: 'center',
 
-    div: {
-      '> p': {
-        fontSize: '1rem',
-      },
-    },
+    div: {},
 
     img: {
       width: '90%',
@@ -47,7 +43,7 @@ export const Hero = styled('div', {
   gap: '2rem',
 
   '> p': {
-    fontFamily: '$roboto',
+    fontFamily: '$default',
     fontSize: '1.5rem',
     color: '$textTitle',
   },

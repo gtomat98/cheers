@@ -15,6 +15,12 @@ export const Form = styled('form', {
   background: '$baseBox',
   borderRadius: 6,
 
+  // border: '2px solid transparent',
+
+  // '&:focus-within': {
+  //   border: '2px solid $baseBorder',
+  // },
+
   '@media (max-width:600px)': {
     gridTemplateColumns: '1fr',
   },

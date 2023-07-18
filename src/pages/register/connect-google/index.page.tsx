@@ -17,11 +17,13 @@ export default function ConnectGoogle() {
   const session = useSession()
   const router = useRouter()
 
+  console.log(session, session.data)
+
   const hasAuthError = !!router.query.error
   const isSignedIn = session.status === 'authenticated'
 
   async function handleConnectGoogle() {
-    await signIn('google', { callbackUrl: '/register/connect-google' })
+    await signIn('google', { callbackUrl: window.location.pathname })
   }
 
   async function handleNavigateToNextStep() {
@@ -36,9 +38,9 @@ export default function ConnectGoogle() {
           Conecte com uma conta do google para que seja possível concluir a
           verificação de conta.
         </p>
+        <MultiStep size={3} currentStep={2} />
       </Header>
 
-      <MultiStep size={3} currentStep={2} />
       <ConnectBox>
         <ConnectItem>
           <p>Google Tasks</p>

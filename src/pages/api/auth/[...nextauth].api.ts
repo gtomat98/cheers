@@ -8,7 +8,9 @@ export function buildNextAuthOptions(
   res: NextApiResponse | NextPageContext['res'],
 ): NextAuthOptions {
   return {
-    secret: process.env.NEXTAUTH_SECRET,
+    session: {
+      strategy: 'jwt',
+    },
     adapter: PrismaAdapter(req, res),
     providers: [
       GoogleProvider({
@@ -30,6 +32,7 @@ export function buildNextAuthOptions(
             username: '',
             email: profile.email,
             avatar_url: profile.picture,
+            role: profile.role ?? 'user',
           }
         },
       }),
@@ -46,11 +49,19 @@ export function buildNextAuthOptions(
         return true
       },
 
-      async session({ session, user }) {
+      async session({ session, token }) {
         return {
           ...session,
-          user,
         }
+      },
+
+      async jwt({ token, user, account, profile, trigger }) {
+        if (trigger === 'signUp') {
+          console.log(token.role)
+          console.log('signUp')
+        }
+        if (user) token.role = user.role
+        return { user, account, profile, token }
       },
     },
   }

@@ -33,7 +33,7 @@ export const {
     },
     fonts: {
       default: 'Quicksand',
-      roboto: 'Roboto',
+      roboto: 'Quicksand',
     },
   },
 })

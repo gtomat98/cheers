@@ -23,7 +23,6 @@ import {
   InputsContainer,
 } from './styles'
 import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
 
 const physicalInformationFormSchema = z.object({
   weight: z
@@ -59,12 +58,11 @@ export default function ConnectGoogle() {
   })
 
   const router = useRouter()
-  const session = useSession()
 
   async function handleForm(data: physicalInformationFormData) {
     const { age, gender, height, weight, activityFactor } = data
     try {
-      await api.post('/users/physical-information', {
+      const { data } = await api.post('/users/physical-information', {
         age,
         height,
         weight,
@@ -72,7 +70,9 @@ export default function ConnectGoogle() {
         gender,
       })
 
-      await router.push(`/${session.data?.user.username}`)
+      console.log(data)
+
+      await router.push(`/home/${data.username}`)
     } catch (err) {
       if (err instanceof AxiosError && err?.response?.data?.message) {
         alert(err.response.data.message)
@@ -88,9 +88,9 @@ export default function ConnectGoogle() {
           Saber mais sobre suas individualidades físicas é importantíssimo para
           calcularmos suas calorias e macronutrientes!
         </p>
+        <MultiStep size={3} currentStep={3} />
       </Header>
 
-      <MultiStep size={3} currentStep={3} />
       <Form onSubmit={handleSubmit(handleForm)}>
         <InputsContainer>
           <label>

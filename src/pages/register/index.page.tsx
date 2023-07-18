@@ -63,9 +63,9 @@ export default function Register() {
       <Header>
         <strong>Bem-vindo ao Cheers!</strong>
         <p>Precisamos de algumas informações para criar seu perfil!</p>
+        <MultiStep size={3} currentStep={1} />
       </Header>
 
-      <MultiStep size={3} currentStep={1} />
       <Form onSubmit={handleSubmit(handleRegister)}>
         <label>
           <span>Nome de usuário</span>
