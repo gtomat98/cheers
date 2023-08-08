@@ -11,10 +11,11 @@ import {
 } from './styles'
 import { useRouter } from 'next/router'
 import { Container, Header } from '../register/styles'
+import { GetServerSideProps } from 'next'
+import { buildNextAuthOptions } from '../api/auth/[...nextauth].api'
+import { getServerSession } from 'next-auth'
 
 export default function ConnectGoogle() {
-  // async function handleConnectGoogle() {}
-
   const session = useSession()
   const router = useRouter()
 
@@ -22,7 +23,7 @@ export default function ConnectGoogle() {
   const isSignedIn = session.status === 'authenticated'
 
   async function handleConnectGoogle() {
-    await signIn('google', { callbackUrl: String(router.query.callbackUrl) })
+    await signIn('google')
   }
 
   return (
@@ -61,4 +62,23 @@ export default function ConnectGoogle() {
       </ConnectBox>
     </Container>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getServerSession(
+    req,
+    res,
+    buildNextAuthOptions(req, res),
+  )
+
+  if (session) {
+    return {
+      redirect: {
+        destination: `home/${session.token.username}`,
+        permanent: false,
+      },
+    }
+  }
+
+  return { props: {} }
 }

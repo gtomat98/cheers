@@ -1,9 +1,9 @@
 // import { getBasalMetabolismRate } from '@/utils/getBasalMetabolismRate'
 // import { shouldIncreaseOrDecreaseCalories } from '@/utils/shouldIncreaseOrDecreaseCalories'
 import type { NextApiRequest, NextApiResponse } from 'next'
-// import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import { z } from 'zod'
-// import { buildNextAuthOptions } from '../auth/[...nextauth].api'
+import { buildNextAuthOptions } from '../auth/[...nextauth].api'
 import { prisma } from '@/lib/prisma'
 import { getToken } from 'next-auth/jwt'
 
@@ -27,13 +27,13 @@ export default async function handler(
     return res.status(405).end()
   }
 
-  // const session = await getServerSession(
-  //   req,
-  //   res,
-  //   buildNextAuthOptions(req, res),
-  // )
+  const session = await getServerSession(
+    req,
+    res,
+    buildNextAuthOptions(req, res),
+  )
 
-  const session = await getToken({ req })
+  // const session = await getToken({ req })
 
   if (!session) {
     return res.status(401).end()
@@ -68,7 +68,7 @@ export default async function handler(
 
   await prisma.user.update({
     where: {
-      id: session.token.user.id,
+      id: session.token.id,
     },
 
     data: {
@@ -81,6 +81,6 @@ export default async function handler(
   })
 
   return res.status(200).json({
-    username: session.token.user.username,
+    username: session.token.username,
   })
 }

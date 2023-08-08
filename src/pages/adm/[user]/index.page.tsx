@@ -24,6 +24,23 @@ import { useState } from 'react'
 import FieldArray from './components/array'
 import { useRouter } from 'next/router'
 import { AxiosError } from 'axios'
+import { ActivityFactor, Gender, Meal } from '@prisma/client'
+
+interface DietProps {
+  user: {
+    id: string
+    username: string
+    name: string
+    email: string
+    avatarUrl: string
+    weight: number
+    height: number
+    age: number
+    gender: Gender
+    activityFactor: ActivityFactor
+  }
+  meals: Meal[]
+}
 
 const mealDietInformationSchema = z.object({
   data: z.array(
@@ -56,7 +73,7 @@ const mealDietInformationSchema = z.object({
 
 type mealDietInformationFormData = z.infer<typeof mealDietInformationSchema>
 
-export default function UserDetails({ user }: any) {
+export default function UserDetails({ user, meals }: DietProps) {
   const [weekday, setWeekday] = useState(0)
   const [direction, setDirection] = useState(0)
 
@@ -64,7 +81,7 @@ export default function UserDetails({ user }: any) {
     useForm<mealDietInformationFormData>({
       resolver: zodResolver(mealDietInformationSchema),
       defaultValues: {
-        data: [
+        data: meals || [
           {
             weekday: 'sunday',
             meals: [
@@ -72,8 +89,8 @@ export default function UserDetails({ user }: any) {
                 meal: 'breakfast',
                 foods: [
                   {
-                    food: 'feijoada',
-                    quantity: '10000',
+                    food: '',
+                    quantity: '',
                   },
                 ],
               },
@@ -81,8 +98,8 @@ export default function UserDetails({ user }: any) {
                 meal: 'lunch',
                 foods: [
                   {
-                    food: 'feijoada',
-                    quantity: '10000',
+                    food: '',
+                    quantity: '',
                   },
                 ],
               },
@@ -90,8 +107,8 @@ export default function UserDetails({ user }: any) {
                 meal: 'snack',
                 foods: [
                   {
-                    food: 'feijoada',
-                    quantity: '10000',
+                    food: '',
+                    quantity: '',
                   },
                 ],
               },
@@ -99,8 +116,8 @@ export default function UserDetails({ user }: any) {
                 meal: 'dinner',
                 foods: [
                   {
-                    food: 'feijoada',
-                    quantity: '10000',
+                    food: '',
+                    quantity: '',
                   },
                 ],
               },
@@ -108,8 +125,8 @@ export default function UserDetails({ user }: any) {
                 meal: 'supper',
                 foods: [
                   {
-                    food: 'feijoada',
-                    quantity: '10000',
+                    food: '',
+                    quantity: '',
                   },
                 ],
               },
@@ -428,6 +445,7 @@ export default function UserDetails({ user }: any) {
         await api.post('/adm/create-diet', {
           userId,
           data,
+          update: !!meals,
         })
         await router.push('/adm/dashboard')
       } catch (err) {
@@ -464,6 +482,10 @@ export default function UserDetails({ user }: any) {
               alt=""
             />
             <Title>{user.name}</Title>
+            <p>Peso: {user.weight} KG</p>
+            <p>Altura: {user.height} CM</p>
+            <p>Idade: {user.age} Anos</p>
+            <p>Nivel de atividades: {user.activityFactor}</p>
           </div>
         </Box>
         <FormContainer>
@@ -533,6 +555,48 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }
   }
 
+  const meals = await prisma.meal.findMany({
+    where: {
+      user_id: user.id,
+      isCurrent: true,
+    },
+    include: {
+      foods: {
+        select: {
+          food: true,
+          quantity: true,
+        },
+      },
+    },
+  })
+
+  // Criar um objeto para agrupar as refeições por dia da semana
+  const groupedMealsByDay = meals.reduce((acc, meal) => {
+    if (!acc[meal.weekday]) {
+      acc[meal.weekday] = []
+    }
+    acc[meal.weekday].push(meal)
+    return acc
+  }, {})
+
+  // Mapear os grupos para a estrutura desejada
+  const result = Object.entries(groupedMealsByDay).map(([weekday, meals]) => {
+    return {
+      weekday,
+      meals: meals.map((meal) => ({
+        meal: meal.meal,
+        foods: meal.foods
+          ? meal.foods.map((food) => ({
+              food: food.food,
+              quantity: food.quantity,
+            }))
+          : [],
+      })),
+    }
+  })
+
+  console.log(result)
+
   return {
     props: {
       user: {
@@ -547,6 +611,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         gender: user.gender,
         activityFactor: user.activity_factor,
       },
+      meals: result,
     },
     revalidate: 60 * 60 * 24, // 1 day
   }

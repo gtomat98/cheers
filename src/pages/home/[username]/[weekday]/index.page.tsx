@@ -1,119 +1,165 @@
-import Logo from '../../../../assets/Logo.svg'
-import Breakfast from '../../../../assets/Meals/breakfast.png'
 import Image from 'next/image'
 import { getGoogleOAuthToken } from '@/lib/google'
-import { google } from 'googleapis'
+// eslint-disable-next-line camelcase
+import { google, tasks_v1 } from 'googleapis'
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import {
   Box,
-  CheckboxIndicator,
-  CheckboxRoot,
   Container,
   Counter,
-  Header,
-  Meal,
   MealMeter,
   Meals,
   Meter,
   Title,
 } from './styles'
-import Link from 'next/link'
-import { CaretLeft, Check } from 'phosphor-react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { prisma } from '@/lib/prisma'
-import { Weekdays } from '@prisma/client'
+import { Weekdays, Prisma, Meals as MealsType } from '@prisma/client'
+import { UserContext } from '@/contexts/userContext'
+import Card from './components/card'
 import { api } from '@/lib/axios'
-import { AxiosError } from 'axios'
 
-interface WeekdayProps {
-  diet: [
+type Meal = {
+  meal_id: string
+  id: string
+  created_at: string
+  isDone: boolean
+  meal: MealsType
+  isCompleted: boolean
+  foods: [
     {
-      meal: string
-      isCompleted: boolean
-      foods: [
-        {
-          food: string
-          quantity: string
-        },
-      ]
+      food: string
+      quantity: string
     },
   ]
-  username: string
-  weekday: any
 }
 
-export default function Weekday({ diet, username, weekday }: WeekdayProps) {
-  const [generic, setGeneric] = useState(diet)
+interface WeekdayProps {
+  weekdayMeals: Meal[]
+  tasklist: string
+  username: string
+  weekday: Weekdays
+}
+
+export default function Weekday({
+  weekdayMeals: Initial,
+  weekday,
+  tasklist,
+}: WeekdayProps) {
+  const [weekdayMeals, setWeekdayMeals] =
+    useState<WeekdayProps['weekdayMeals']>(Initial)
+  const { cards } = useContext(UserContext)
+  const meter = weekdayMeals.filter((meal) => meal.isCompleted).length
+
+  function handleCheck(mealId: string, isChecked: boolean) {
+    const updatedMeals = weekdayMeals.filter((meal) => {
+      if (meal.meal_id === mealId) {
+        meal.isCompleted = isChecked
+        return meal
+      }
+
+      return meal
+    })
+    setWeekdayMeals(updatedMeals)
+    console.log(weekdayMeals)
+  }
+
+  async function handleMealChecked(
+    isChecked: boolean,
+    mealId: string,
+    meal: MealsType,
+    mealHistoricId: string,
+  ) {
+    const { data } = await api.put('/fetch/updateTask', {
+      mealId,
+      isChecked,
+      tasklist,
+      title: meal,
+      mealHistoricId,
+    })
+
+    if (data.reload) {
+      window.location.reload()
+    }
+  }
 
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const teste = await api.post('/fetch/useFetch', {
-          username,
-          weekday,
+        const { data } = await api.post('/fetch/getUpdatedTasks', {
+          tasklist,
         })
-
-        setGeneric(teste.data.diet)
-        console.log(teste.data.diet, generic)
-      } catch (err) {
-        if (err instanceof AxiosError && err?.response?.data?.message) {
-          alert(err.response.data.message)
-        }
-      }
+        const updatedMeals: WeekdayProps['weekdayMeals'] = weekdayMeals.map(
+          (meal) => {
+            const isChanged = data.meals.find(
+              (updatedMeal: Meal) => updatedMeal.id === meal.meal_id,
+            )
+            return isChanged
+              ? {
+                  ...meal,
+                  isCompleted: isChanged.status === 'completed',
+                }
+              : meal
+          },
+        )
+        setWeekdayMeals(updatedMeals)
+      } catch (err) {}
     }, 5000)
 
     return () => clearInterval(interval) // Limpar o intervalo quando o componente for desmontado
-  }, [username, weekday, generic])
+  }, [tasklist, weekdayMeals])
 
   return (
     <>
       <Container>
-        <Header>
-          <Link href="/home/username">
-            <Image src={Logo} width={180} quality={100} priority alt="" />
-          </Link>
-        </Header>
-        <Box>
+        <Box
+          css={{
+            $$color: cards[weekday].color,
+            $$tag: cards[weekday].tag,
+            $$meterValue: meter,
+          }}
+        >
+          <Image
+            src={cards[weekday].planet}
+            alt={`${weekday}`}
+            priority
+            width={100}
+          />
           <header>
-            <Title>
-              <button>
-                <CaretLeft size={18} weight="bold" />
-              </button>
-              Domingo
-            </Title>
+            <Title>{weekday.charAt(0).toUpperCase() + weekday.slice(1)}</Title>
             <MealMeter>
               <Meter>
                 <div></div>
               </Meter>
               <Counter>
                 <span>Refeições</span>
-                <span>2 de 5</span>
+                <span>
+                  {meter} de {weekdayMeals.length}
+                </span>
               </Counter>
             </MealMeter>
           </header>
-          <Meals>
-            {generic.map((meal) => {
-              return (
-                <Meal key={meal.meal}>
-                  <Image src={Breakfast} height={150} quality={100} alt="" />
-                  <h3>{meal.meal}</h3>
-                  <div>
-                    <CheckboxRoot
-                      defaultChecked={meal.isCompleted}
-                      checked={meal.isCompleted}
-                    >
-                      <CheckboxIndicator>
-                        <Check size={18} weight="bold" />
-                      </CheckboxIndicator>
-                    </CheckboxRoot>
-                  </div>
-                </Meal>
-              )
-            })}
-          </Meals>
         </Box>
+        <Meals
+          css={{
+            $$color: cards[weekday].color,
+            $$tag: cards[weekday].tag,
+          }}
+        >
+          {weekdayMeals.map((meal) => {
+            return (
+              <Card
+                isCompleted={meal.isCompleted}
+                releaseCheck={handleCheck}
+                meal={meal}
+                releaseMealChecked={handleMealChecked}
+                key={meal.meal_id}
+              />
+            )
+          })}
+        </Meals>
       </Container>
     </>
   )
@@ -136,14 +182,29 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     },
   })
 
+  if (!user) {
+    return {
+      notFound: true,
+    }
+  }
+
+  const currentDate = new Date()
+  const startOfWeek = new Date(currentDate)
+  startOfWeek.setDate(currentDate.getDate() - currentDate.getDay())
+
+  const endOfWeek = new Date(currentDate)
+  endOfWeek.setDate(currentDate.getDate() + (6 - currentDate.getDay()))
+
   const api = google.tasks({
     version: 'v1',
-    auth: await getGoogleOAuthToken(user!.id),
+    auth: await getGoogleOAuthToken(user.id),
   })
 
-  const taskslist = await prisma.meal.findFirst({
+  const { tasklist_id: tasklist }: any = await prisma.meal.findFirst({
     where: {
       weekday,
+      user_id: user.id,
+      isCurrent: true,
     },
 
     select: {
@@ -151,82 +212,65 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     },
   })
 
-  if (taskslist && taskslist.tasklist_id) {
-    const tasks = await api.tasks.list({
-      tasklist: taskslist.tasklist_id,
-    })
-
-    const allTasksOnMyDatabase = await prisma.meal.findMany({
-      where: {
-        weekday,
-      },
-    })
-
-    const updatedTasks = allTasksOnMyDatabase.map((taskFromDatabase) => ({
-      ...taskFromDatabase,
-      completed: true,
-    }))
-
-    await prisma.meal.updateMany({
-      where: {
-        weekday,
-        user_id: user?.id,
-      },
-      data: {
-        completed: true,
-      },
-    })
-
-    updatedTasks.forEach((updatedTask) => {
-      tasks.data.items!.forEach(async (task) => {
-        if (task.id === updatedTask.id) {
-          await prisma.meal.update({
-            where: {
-              id: task.id,
-            },
-
-            data: {
-              completed: false,
-            },
-          })
-        }
-      })
-    })
+  if (!tasklist) {
+    return {
+      notFound: true,
+    }
   }
+  // eslint-disable-next-line camelcase
+  const itemsToSqlArray = (items: tasks_v1.Schema$Task[]) =>
+    items.map(
+      (item) =>
+        `('${item.id}', '${item.status}', '${item.completed}', '${item.title}')`,
+    )
 
-  const meals = await prisma.meal.findMany({
-    where: {
-      weekday,
-      user_id: user?.id,
-    },
+  const { data } = await api.tasks.list({
+    tasklist,
+    showCompleted: true,
+    showHidden: true,
   })
 
-  if (!meals) {
+  const { items } = data
+
+  if (!items) {
     return {
       notFound: true,
     }
   }
 
-  const dietPromises = meals.map(async (meal) => {
-    const foods = await prisma.food.findMany({
-      where: {
-        meal_id: meal.id,
-      },
-    })
-    return {
-      meal: meal.meal,
-      isCompleted: meal.completed,
-      foods,
-    }
-  })
-
-  const diet = await Promise.all(dietPromises.reverse())
+  const weekdayMeals = await prisma.$queryRaw`
+  WITH tasks AS (
+    SELECT *
+    FROM (VALUES ${Prisma.raw(itemsToSqlArray(items).join(', '))})
+      AS t ("id", "status", "completed", "title")
+  ),
+  updated_meals AS (
+    UPDATE "mealsHistoric" AS mh
+    SET "isCompleted" = t."status" = 'completed'
+    FROM tasks t
+    WHERE mh."meal_id" = t."id"
+    RETURNING mh.*
+  )
+  SELECT
+    um.*,
+    TO_CHAR(um."created_at", 'YYYY-MM-DD') as "created_at",
+    json_agg(json_build_object('id', f.id, 'food', f.food, 'quantity', f.quantity)) as "foods",
+    t."title" AS "meal"
+  FROM updated_meals um
+  JOIN tasks t ON um."meal_id" = t."id"
+  LEFT JOIN "foods" as f ON um."meal_id" = f."meal_id"
+  WHERE um."created_at" >= ${startOfWeek} AND
+        um."created_at" <= ${endOfWeek}
+  GROUP BY um.id, t."title", um."meal_id", f.id, f.food, f.quantity, um.created_at, um."isDone", um."isCompleted";
+`
+  console.log('AQUI:', weekdayMeals)
 
   return {
     props: {
-      diet,
+      weekdayMeals,
       username,
       weekday,
+      tasklist,
     },
     revalidate: 60 * 60 * 24, // 1 day
   }

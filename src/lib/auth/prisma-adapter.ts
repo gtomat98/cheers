@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse, NextPageContext } from 'next'
 import { Adapter } from 'next-auth/adapters'
 import { prisma } from '../prisma'
 import { parseCookies, destroyCookie } from 'nookies'
+import { Role } from '@prisma/client'
 
 export function PrismaAdapter(
   req: NextApiRequest | NextPageContext['req'],
@@ -9,6 +10,7 @@ export function PrismaAdapter(
 ): Adapter {
   return {
     async createUser(user) {
+      console.log('createUser: ', user)
       const { '@cheers:userId': userIdOnCookies } = parseCookies({ req })
       if (!userIdOnCookies) {
         throw new Error('User Id not found on cookies')
@@ -22,7 +24,7 @@ export function PrismaAdapter(
           name: user.name,
           email: user.email,
           avatar_url: user?.avatar_url,
-          role: user.role,
+          role: user.role as Role,
         },
       })
 
@@ -42,6 +44,7 @@ export function PrismaAdapter(
     },
 
     async getUser(id) {
+      console.log('getUser: ', id)
       const user = await prisma.user.findUnique({
         where: {
           id,
@@ -64,6 +67,7 @@ export function PrismaAdapter(
     },
 
     async getUserByEmail(email) {
+      console.log('getUserByEmail: ', email)
       const user = await prisma.user.findUnique({
         where: {
           email,
@@ -84,7 +88,7 @@ export function PrismaAdapter(
       }
     },
 
-    async getUserByAccount({ providerAccountId, provider }) {
+    async getUserByAccount({ provider, providerAccountId }) {
       const account = await prisma.account.findUnique({
         where: {
           provider_provider_account_id: {
@@ -104,6 +108,7 @@ export function PrismaAdapter(
       const { user } = account
 
       return {
+        userExists: true,
         id: user.id,
         name: user.name,
         username: user.username,
@@ -115,6 +120,7 @@ export function PrismaAdapter(
     },
 
     async updateUser(user) {
+      console.log('updateUser: ', user)
       const prismaUser = await prisma.user.update({
         where: {
           id: user.id!,
@@ -207,6 +213,7 @@ export function PrismaAdapter(
     },
 
     async updateSession({ sessionToken, userId, expires }) {
+      console.log('Session updated')
       const prismaSession = await prisma.session.update({
         where: {
           session_token: sessionToken,

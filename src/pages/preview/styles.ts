@@ -44,8 +44,12 @@ export const Hero = styled('div', {
 
   '> p': {
     fontFamily: '$default',
-    fontSize: '1.5rem',
+    fontSize: '2rem',
     color: '$textTitle',
+    span: {
+      fontWeight: 'bold',
+      fontFamily: 'Quicksand',
+    },
   },
 })
 

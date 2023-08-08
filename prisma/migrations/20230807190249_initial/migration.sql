@@ -5,10 +5,24 @@ CREATE TYPE "genders" AS ENUM ('male', 'female');
 CREATE TYPE "ActivityFactor" AS ENUM ('1.2', '1.375', '1.55', '1.725');
 
 -- CreateEnum
+CREATE TYPE "Role" AS ENUM ('user', 'admin', 'notDefined');
+
+-- CreateEnum
 CREATE TYPE "Weekdays" AS ENUM ('0', '1', '2', '3', '4', '5', '6');
 
 -- CreateEnum
 CREATE TYPE "Meals" AS ENUM ('0', '1', '2', '3', '4');
+
+-- CreateTable
+CREATE TABLE "mealsHistoric" (
+    "id" TEXT NOT NULL,
+    "meal_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL,
+    "isCompleted" BOOLEAN NOT NULL DEFAULT false,
+    "isDone" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "mealsHistoric_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "meals" (
@@ -17,6 +31,7 @@ CREATE TABLE "meals" (
     "task_id" TEXT,
     "user_id" TEXT NOT NULL,
     "completed" BOOLEAN NOT NULL,
+    "isCurrent" BOOLEAN NOT NULL,
     "weekday" "Weekdays" NOT NULL,
     "meal" "Meals" NOT NULL,
 
@@ -41,7 +56,8 @@ CREATE TABLE "users" (
     "email" TEXT,
     "avatar_url" TEXT,
     "verified" BOOLEAN NOT NULL DEFAULT false,
-    "role" TEXT,
+    "role" "Role" NOT NULL DEFAULT 'notDefined',
+    "isInactive" BOOLEAN NOT NULL DEFAULT false,
     "weight" INTEGER,
     "height" INTEGER,
     "age" INTEGER,
@@ -91,6 +107,9 @@ CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "accounts"("p
 
 -- CreateIndex
 CREATE UNIQUE INDEX "sessions_session_token_key" ON "sessions"("session_token");
+
+-- AddForeignKey
+ALTER TABLE "mealsHistoric" ADD CONSTRAINT "mealsHistoric_meal_id_fkey" FOREIGN KEY ("meal_id") REFERENCES "meals"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "meals" ADD CONSTRAINT "meals_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -6,27 +6,29 @@ import { Container, Hero, MainContainer, Preview } from './styles'
 
 export default function Home() {
   return (
-    <Container>
-      <MainContainer>
-        <Hero>
-          <Image src={Logo} width={350} quality={100} priority alt="" />
-          <p>
-            Uma plataforma que te oferece a oportunidade de brindar à sua saúde
-            da melhor forma!
-          </p>
-          <ClaimUserForm />
-        </Hero>
+    <>
+      <Container>
+        <MainContainer>
+          <Hero>
+            <Image src={Logo} width={350} quality={100} priority alt="" />
+            <p>
+              A plataforma que te oferece a oportunidade de brindar à sua{' '}
+              <span>saúde</span> da melhor forma!
+            </p>
+            <ClaimUserForm />
+          </Hero>
 
-        <Preview>
-          <Image
-            src={previewImage}
-            height={450}
-            quality={100}
-            priority
-            alt="Imagem simbolizando aplicação em funcionamento"
-          />
-        </Preview>
-      </MainContainer>
-    </Container>
+          <Preview>
+            <Image
+              src={previewImage}
+              height={450}
+              quality={100}
+              priority
+              alt="Imagem simbolizando aplicação em funcionamento"
+            />
+          </Preview>
+        </MainContainer>
+      </Container>
+    </>
   )
 }

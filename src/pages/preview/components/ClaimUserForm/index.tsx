@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button, Container, Form, FormAnnotation, Input } from './styles'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 const ClaimUsernameFormSchema = z.object({
   username: z
@@ -50,6 +51,9 @@ export function ClaimUserForm() {
             ? errors.username?.message
             : 'Digite o nome do usuário desejado'}
         </p>
+        <Link href={'/login'}>
+          <span>Já possui uma conta?</span>
+        </Link>
       </FormAnnotation>
     </Container>
   )

@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { setCookie } from 'nookies'
+import { parseCookies, setCookie } from 'nookies'
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,6 +14,7 @@ export default async function handler(
   const userExists = await prisma.user.findUnique({
     where: {
       username,
+      isInactive: false,
     },
   })
 
@@ -29,6 +30,26 @@ export default async function handler(
       username,
     },
   })
+
+  // faça a verificação de existencia do cookie aqui
+  const { '@cheers:userId': userIdOnCookies } = parseCookies({ req })
+  if (userIdOnCookies) {
+    // aqui esta o problema de rollback
+    try {
+      await prisma.user.update({
+        where: {
+          id: userIdOnCookies,
+          accounts: { none: {} },
+        },
+
+        data: {
+          isInactive: true,
+        },
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   setCookie(
     {

@@ -3,9 +3,11 @@ import { styled } from '@/styles'
 export const Container = styled('div', {
   display: 'block',
   width: '100%',
+  maxWidth: 400,
 })
 
 export const Form = styled('form', {
+  boxSizing: 'border-box',
   maxWidth: 400,
   display: 'grid',
   gridTemplateColumns: '1fr auto',
@@ -14,12 +16,6 @@ export const Form = styled('form', {
 
   background: '$baseBox',
   borderRadius: 6,
-
-  // border: '2px solid transparent',
-
-  // '&:focus-within': {
-  //   border: '2px solid $baseBorder',
-  // },
 
   '@media (max-width:600px)': {
     gridTemplateColumns: '1fr',
@@ -74,10 +70,29 @@ export const Button = styled('button', {
 })
 
 export const FormAnnotation = styled('div', {
-  marginTop: 12,
+  marginTop: 8,
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
   p: {
     fontSize: 12,
     color: '$text',
     opacity: 0.8,
+  },
+
+  a: {
+    all: 'unset',
+    cursor: 'pointer',
+    alignItems: 'center',
+  },
+
+  span: {
+    all: 'unset',
+    fontSize: 12,
+    color: '$text',
+    opacity: 1,
+    '&:hover': {
+      color: '$baseBorder',
+    },
   },
 })

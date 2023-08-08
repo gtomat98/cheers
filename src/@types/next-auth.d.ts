@@ -9,5 +9,16 @@ declare module 'next-auth' {
     username: string
     avatar_url: string
     role: string
+    userExists?: boolean
+  }
+
+  interface Session {
+    token: {
+      username: string
+      id: string
+      verified: boolean
+    }
+    username: string
+    avatarUrl: string
   }
 }

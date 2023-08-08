@@ -1,14 +1,52 @@
 import { styled } from '@/styles'
 
 export const Container = styled('main', {
-  maxWidth: 572,
+  maxWidth: 1200,
   margin: '60px auto 16px',
-  padding: '0 16px',
+  padding: '0 10vw',
 })
 
 export const Header = styled('header', {
-  maxWidth: 572,
+  maxWidth: 1200,
+  padding: '0 10vw',
   margin: '60px auto 16px',
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 48,
+  alignItems: 'center',
+})
+
+export const InputContainer = styled('label', {
+  width: 400,
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
+  gap: 8,
+  borderRadius: 6,
+  justifyContent: 'space-between',
+  padding: '8px 12px',
+  backgroundColor: 'transparent',
+  boxSizing: 'border-box',
+  border: '1px solid $text',
+
+  '&:focus-within': {
+    border: '1px solid $baseBorder',
+  },
+
+  svg: {
+    color: '$text',
+  },
+})
+
+export const Input = styled('input', {
+  all: 'unset',
+  boxSizing: 'border-box',
+  padding: 8,
+  maxWidth: 320,
+  minWidth: 0,
+  backgroundColor: 'transparent',
+  fontSize: 16,
+  color: '$textTitle',
 })
 
 export const Box = styled('div', {
@@ -77,9 +115,11 @@ export const UsersList = styled('ul', {
   justifyContent: 'center',
   gridTemplateColumns: 'repeat(auto-fit, 169px)',
   gridGap: '2rem 2rem',
+  height: 220,
 })
 
 export const User = styled('li', {
+  height: 220,
   listStyleType: 'none',
   background: '$baseContent',
   borderRadius: 3,

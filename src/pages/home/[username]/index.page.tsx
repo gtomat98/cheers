@@ -1,149 +1,49 @@
-import Logo from '../../../assets/Logo.svg'
-import Breakfast from '../../../assets/Meals/breakfast.png'
-import Image from 'next/image'
-
 import { useKeenSlider } from 'keen-slider/react'
 import 'keen-slider/keen-slider.min.css'
 
-import {
-  Action,
-  ActionsContainer,
-  Box,
-  Buttons,
-  ButtonStyled,
-  Container,
-  Header,
-  Title,
-  WeekDay,
-  WeekDays,
-} from './styles'
-import Link from 'next/link'
-import { CaretRight } from 'phosphor-react'
+import { Box, Container, Title, WeekDays } from './styles'
 import { prisma } from '@/lib/prisma'
-import { signOut, useSession } from 'next-auth/react'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { useContext } from 'react'
+import { UserContext } from '@/contexts/userContext'
+import Card from './components/card'
 
 interface HomeProps {
   user: {
     name: string
+    avatarUrl: string
   }
 }
 
 export default function Home({ user }: HomeProps) {
+  const { cards } = useContext(UserContext)
   const [sliderRef] = useKeenSlider({
     slides: {
-      perView: 2,
+      perView: 'auto',
       spacing: 24,
     },
   })
 
-  const session = useSession()
-
-  console.log(session)
-
   return (
     <>
       <Container>
-        <Header>
-          <Link href="/home/username">
-            <Image src={Logo} width={180} quality={100} priority alt="" />
-          </Link>
-        </Header>
         <Box>
           <Title>
-            Olá <span>{user.name}</span>, seja bem-vindo de volta!
+            Olá <span>{user.name}</span>, seja bem-vindo!
           </Title>
-          <span>Dieta e treino de hoje</span>
-          <button
-            onClick={() => {
-              signOut()
-            }}
-          >
-            Sair
-          </button>
-          <ActionsContainer>
-            <Action>
-              <Image
-                src={Breakfast}
-                width={120}
-                quality={100}
-                priority
-                alt=""
-              />
-              <CaretRight size={32} weight="bold" />
-            </Action>
-            <Action>
-              <Image
-                src={Breakfast}
-                width={120}
-                quality={100}
-                priority
-                alt=""
-              />
-              <CaretRight size={32} weight="bold" />
-            </Action>
-          </ActionsContainer>
+          <span>Acesse suas Refeições</span>
         </Box>
         <WeekDays ref={sliderRef} className="keen-slider">
-          <ul>
-            <WeekDay className="keen-slider__slide">
-              <header>Domingo</header>
-              <Buttons>
-                <ButtonStyled>
-                  <Image src={Breakfast} alt="" width={80} />
-                  <span>
-                    <strong>Café da manhã</strong>
-                  </span>
-                  <CaretRight size={32} weight="bold" />
-                </ButtonStyled>
-                <ButtonStyled>
-                  <Image src={Breakfast} alt="" width={80} />
-                  <span>
-                    <strong>Café da manhã</strong>
-                  </span>
-                  <CaretRight size={32} weight="bold" />
-                </ButtonStyled>
-              </Buttons>
-            </WeekDay>
-            <WeekDay className="keen-slider__slide">
-              <header>Segunda-Feira</header>
-              <Buttons>
-                <ButtonStyled>
-                  <Image src={Breakfast} alt="" width={80} />
-                  <span>
-                    <strong>Café da manhã</strong>
-                  </span>
-                  <CaretRight size={32} weight="bold" />
-                </ButtonStyled>
-                <ButtonStyled>
-                  <Image src={Breakfast} alt="" width={80} />
-                  <span>
-                    <strong>Café da manhã</strong>
-                  </span>
-                  <CaretRight size={32} weight="bold" />
-                </ButtonStyled>
-              </Buttons>
-            </WeekDay>
-            <WeekDay className="keen-slider__slide">
-              <header>Terça-Feira</header>
-              <Buttons>
-                <ButtonStyled>
-                  <Image src={Breakfast} alt="" width={80} />
-                  <span>
-                    <strong>Café da manhã</strong>
-                  </span>
-                  <CaretRight size={32} weight="bold" />
-                </ButtonStyled>
-                <ButtonStyled>
-                  <Image src={Breakfast} alt="" width={80} />
-                  <span>
-                    <strong>Café da manhã</strong>
-                  </span>
-                  <CaretRight size={32} weight="bold" />
-                </ButtonStyled>
-              </Buttons>
-            </WeekDay>
-          </ul>
+          {Object.values(cards).map((card) => {
+            return (
+              <Card
+                color={card.color}
+                planet={card.planet}
+                weekday={card.weekday}
+                key={card.weekday}
+              />
+            )
+          })}
         </WeekDays>
       </Container>
     </>
@@ -176,6 +76,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       user: {
         name: user.name,
+        avatarUrl: user.avatar_url,
       },
     },
     revalidate: 60 * 60 * 24, // 1 day

@@ -1,7 +1,9 @@
 import { PrismaAdapter } from '@/lib/auth/prisma-adapter'
+import { prisma } from '@/lib/prisma'
 import { NextApiRequest, NextApiResponse, NextPageContext } from 'next'
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
+import { parseCookies } from 'nookies'
 
 export function buildNextAuthOptions(
   req: NextApiRequest | NextPageContext['req'],
@@ -10,6 +12,9 @@ export function buildNextAuthOptions(
   return {
     session: {
       strategy: 'jwt',
+    },
+    pages: {
+      signIn: '/login',
     },
     adapter: PrismaAdapter(req, res),
     providers: [
@@ -32,14 +37,22 @@ export function buildNextAuthOptions(
             username: '',
             email: profile.email,
             avatar_url: profile.picture,
-            role: profile.role ?? 'user',
+            role:
+              profile.email === 'matheus.dafonseca2004@gmail.com'
+                ? 'admin'
+                : 'user',
           }
         },
       }),
     ],
 
     callbacks: {
-      async signIn({ account }) {
+      async signIn({ account, user }) {
+        const { '@cheers:userId': userIdOnCookies } = parseCookies({ req })
+        if (!user.userExists && !userIdOnCookies) {
+          return '/register?username=newUser'
+        }
+
         if (
           !account?.scope?.includes('https://www.googleapis.com/auth/tasks')
         ) {
@@ -48,20 +61,34 @@ export function buildNextAuthOptions(
 
         return true
       },
-
-      async session({ session, token }) {
-        return {
-          ...session,
+      async jwt({ token, user }) {
+        if (user) token.role = user.role
+        let userDatabase
+        if (token.id) {
+          userDatabase = await prisma.user.findUnique({
+            where: {
+              id: token.id as string,
+            },
+          })
+          token.verified = userDatabase?.verified
         }
+        return { ...user, verified: userDatabase?.verified, ...token }
       },
 
-      async jwt({ token, user, account, profile, trigger }) {
-        if (trigger === 'signUp') {
-          console.log(token.role)
-          console.log('signUp')
+      async session({ session, token }) {
+        const user = await prisma.user.findUnique({
+          where: {
+            id: token.id as string,
+          },
+        })
+        return {
+          ...session,
+          role: token.role,
+          token,
+          verified: user?.verified,
+          username: user?.username,
+          avatarUrl: user?.avatar_url,
         }
-        if (user) token.role = user.role
-        return { user, account, profile, token }
       },
     },
   }
