@@ -27,12 +27,14 @@ export function FieldsForFoods(index, weekday, control, register) {
                 {...register(
                   `data.${weekday}.meals.${index}.foods.${foodIndex}.food`,
                 )}
+                defaultValue={item.food}
               />
               <QtdInput
                 placeholder="gr.."
                 {...register(
                   `data.${weekday}.meals.${index}.foods.${foodIndex}.quantity`,
                 )}
+                defaultValue={item.quantity}
               />
             </div>
 
