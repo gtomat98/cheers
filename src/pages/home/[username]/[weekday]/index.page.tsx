@@ -21,7 +21,7 @@ import {
 } from './styles'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { prisma } from '@/lib/prisma'
-import { Weekdays, Prisma, Meals as MealsType } from '@prisma/client'
+import { Weekdays, Prisma } from '@prisma/client'
 import { UserContext } from '@/contexts/userContext'
 import Card from './components/card'
 import { api } from '@/lib/axios'
@@ -33,7 +33,7 @@ type Meal = {
   id: string
   created_at: string
   isDone: boolean
-  meal: MealsType
+  meal: 'Café da manhã' | 'Almoço' | 'Café da tarde' | 'Jantar' | 'Ceia'
   isCompleted: boolean
   foods: [
     {
@@ -75,7 +75,7 @@ export default function Weekday({
   async function handleMealChecked(
     isChecked: boolean,
     mealId: string,
-    meal: MealsType,
+    meal: 'Café da manhã' | 'Almoço' | 'Café da tarde' | 'Jantar' | 'Ceia',
     mealHistoricId: string,
     taskId: string,
   ) {
@@ -164,47 +164,47 @@ export default function Weekday({
           <Card
             isCompleted={
               weekdayMeals.find((meal) => meal.meal === 'Café da manhã')
-                ?.isCompleted
+                ?.isCompleted!
             }
             releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Café da manhã')}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Café da manhã')!}
             releaseMealChecked={handleMealChecked}
             src={Breakfast}
           />
           <Card
             isCompleted={
-              weekdayMeals.find((meal) => meal.meal === 'Almoço')?.isCompleted
+              weekdayMeals.find((meal) => meal.meal === 'Almoço')?.isCompleted!
             }
             releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Almoço')}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Almoço')!}
             releaseMealChecked={handleMealChecked}
             src={Lunch}
           />
           <Card
             isCompleted={
               weekdayMeals.find((meal) => meal.meal === 'Café da tarde')
-                ?.isCompleted
+                ?.isCompleted!
             }
             releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Café da tarde')}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Café da tarde')!}
             releaseMealChecked={handleMealChecked}
             src={Snack}
           />
           <Card
             isCompleted={
-              weekdayMeals.find((meal) => meal.meal === 'Jantar')?.isCompleted
+              weekdayMeals.find((meal) => meal.meal === 'Jantar')?.isCompleted!
             }
             releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Jantar')}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Jantar')!}
             releaseMealChecked={handleMealChecked}
             src={Lunch}
           />
           <Card
             isCompleted={
-              weekdayMeals.find((meal) => meal.meal === 'Ceia')?.isCompleted
+              weekdayMeals.find((meal) => meal.meal === 'Ceia')?.isCompleted!
             }
             releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Ceia')}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Ceia')!}
             releaseMealChecked={handleMealChecked}
             src={Supper}
           />

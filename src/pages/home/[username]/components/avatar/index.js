@@ -40,11 +40,6 @@ import { keyframes, styled } from '@/styles'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
-interface AvatarTypes {
-  src: string
-  signOut?: () => void
-}
-
 const physicalInformationFormSchema = z.object({
   weight: z
     .string()
@@ -66,9 +61,7 @@ const physicalInformationFormSchema = z.object({
   activityFactor: z.enum(['sedentary', 'light', 'moderate', 'high']),
 })
 
-type physicalInformationFormData = z.infer<typeof physicalInformationFormSchema>
-
-export default function Avatar({ src, signOut }: AvatarTypes) {
+export default function Avatar({ src, signOut }) {
   function releaseSignOut() {
     if (signOut) {
       signOut()
@@ -87,7 +80,7 @@ export default function Avatar({ src, signOut }: AvatarTypes) {
     focusRef.current = dropdownTriggerRef.current
   }
 
-  function handleDialogItemOpenChange(open: any) {
+  function handleDialogItemOpenChange(open) {
     setHasOpenDialog(open)
     if (open === false) {
       setDropdownOpen(false)
@@ -99,11 +92,11 @@ export default function Avatar({ src, signOut }: AvatarTypes) {
     handleSubmit,
     control,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<physicalInformationFormData>({
+  } = useForm({
     resolver: zodResolver(physicalInformationFormSchema),
   })
 
-  async function handleForm(data: physicalInformationFormData) {
+  async function handleForm(data) {
     handleDialogItemOpenChange(false)
     const { age, gender, height, weight, activityFactor } = data
     try {
@@ -343,8 +336,9 @@ const DialogItem = React.forwardRef((props, forwardedRef) => {
   pastDate.setDate(actualDate.getDate() - 15)
   const formattedDate = pastDate.toISOString()
   const itsUpdatable =
-    session.data!.lastUpdate !== null
-      ? session.data!.lastUpdate < formattedDate
+    // eslint-disable-next-line prettier/prettier
+    session.data.lastUpdate !== null
+      ? session.data.lastUpdate < formattedDate
       : true
 
   return (

@@ -15,7 +15,6 @@ import {
   Li,
   StyledChevron,
 } from './styles'
-import { Meals } from '@prisma/client'
 
 interface CardProps {
   isCompleted: boolean
@@ -23,7 +22,7 @@ interface CardProps {
     id: string
     meal_id: string
     task_id: string
-    meal: Meals
+    meal: 'Café da manhã' | 'Almoço' | 'Café da tarde' | 'Jantar' | 'Ceia'
     isCompleted: boolean
     isDone: boolean
     foods: [
@@ -37,7 +36,7 @@ interface CardProps {
   releaseMealChecked: (
     isChecked: boolean,
     mealId: string,
-    meal: Meals,
+    meal: 'Café da manhã' | 'Almoço' | 'Café da tarde' | 'Jantar' | 'Ceia',
     mealHistoricId: string,
     taskId: string,
   ) => void
