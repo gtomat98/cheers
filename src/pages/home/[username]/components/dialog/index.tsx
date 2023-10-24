@@ -1,35 +1,13 @@
 /* eslint-disable react/display-name */
 
-import * as Select from '@radix-ui/react-select'
 import * as React from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-import { Cross2Icon } from '@radix-ui/react-icons'
-import { ArrowRight, CaretDown } from 'phosphor-react'
 
-import { violet, blackA, mauve } from '@radix-ui/colors'
 import { DropdownMenuItem } from '../avatar/styles'
-import { styled, keyframes } from '@/styles'
-import {
-  ActivityFactorContent,
-  ActivityFactorItem,
-  ActivityFactorItemText,
-  ActivityFactorRoot,
-  ActivityFactorSelect,
-  ActivityFactorTypeContainer,
-  GenderType,
-  GenderTypeButton,
-  GenderTypeContainer,
-  InputsContainer,
-} from '@/pages/register/physical-information/styles'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { api } from '@/lib/axios'
-import { AxiosError } from 'axios'
-import { Button, FormError } from '@/pages/register/styles'
-import { useRouter } from 'next/router'
-import { InputContainer } from '@/pages/adm/dashboard/styles'
 
 const physicalInformationFormSchema = z.object({
   weight: z
@@ -58,31 +36,10 @@ const DialogItem = React.forwardRef((props, forwardedRef) => {
   const { triggerChildren, children, onSelect, onOpenChange, ...itemProps } =
     props
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors, isSubmitting, isValid },
-  } = useForm<physicalInformationFormData>({
+  useForm<physicalInformationFormData>({
     resolver: zodResolver(physicalInformationFormSchema),
   })
 
-  async function handleForm(data: physicalInformationFormData) {
-    const { age, gender, height, weight, activityFactor } = data
-    try {
-      await api.post('/users/update-physical-information', {
-        age,
-        height,
-        weight,
-        activityFactor,
-        gender,
-      })
-    } catch (err) {
-      if (err instanceof AxiosError && err?.response?.data?.message) {
-        alert(err.response.data.message)
-      }
-    }
-  }
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
@@ -110,14 +67,6 @@ const DialogItem = React.forwardRef((props, forwardedRef) => {
       </Dialog.Portal>
     </Dialog.Root>
   )
-})
-
-const Form = styled('form', {
-  borderRadius: 6,
-
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 24,
 })
 
 export default DialogItem

@@ -123,7 +123,7 @@ export default async function handler(
   const today = new Date().getDay().toString() // Convertendo o dia atual para string
   const weekdayNum = new Date().getDay() // Obtém o dia da semana atual (0 a 6)
 
-  const meals = await prisma.$queryRaw`
+  await prisma.$queryRaw`
   INSERT INTO "mealsHistoric" ("id", "meal_id", "created_at", "isCompleted", "isDone")
   SELECT
     gen_random_uuid(),

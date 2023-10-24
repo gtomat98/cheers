@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { prisma } from '@/lib/prisma'
 import {

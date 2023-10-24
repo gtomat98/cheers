@@ -35,7 +35,7 @@ export default async function handler(
   })
 
   async function createTasks({ tasklistId, meal, notes, taskId }: createTasks) {
-    const teste = await tasks.tasks.update({
+    await tasks.tasks.update({
       tasklist: `${tasklistId}`,
       task: `${taskId}`,
       requestBody: {
