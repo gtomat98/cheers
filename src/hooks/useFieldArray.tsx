@@ -32,11 +32,9 @@ export function FieldsForFoods(
                 {...register(
                   `data.${weekday}.meals.${index}.foods.${foodIndex}.food` as const,
                 )}
-                defaultValue={item.food}
               />
               <QtdInput
                 placeholder="gr.."
-                defaultValue={item.quantity}
                 {...register(
                   `data.${weekday}.meals.${index}.foods.${foodIndex}.quantity` as const,
                 )}
