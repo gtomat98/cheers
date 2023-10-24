@@ -19,6 +19,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/adm/[user]/components/array.js", "src/pages/adm/[user]/components/nestedArray.js", "src/hooks/useFieldArray.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/adm/[user]/components/array.js", "src/pages/adm/[user]/components/nestedArray.js", "src/hooks/useFieldArray.js", "src/pages/api/adm/update-diet.api.js", "src/pages/api/adm/create-diet.api.js"],
   "exclude": ["node_modules"]
 }

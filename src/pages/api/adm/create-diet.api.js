@@ -1,19 +1,8 @@
 import { getGoogleOAuthToken } from '@/lib/google'
 import { prisma } from '@/lib/prisma'
-import { food } from '@prisma/client'
 import { google } from 'googleapis'
-import type { NextApiRequest, NextApiResponse } from 'next'
 
-type createTasks = {
-  tasklistId: string
-  meal: string
-  notes: string
-}
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).end()
   }
@@ -55,7 +44,7 @@ export default async function handler(
     auth: await getGoogleOAuthToken(data.data.user_id),
   })
 
-  async function createTaskList(weekday: string) {
+  async function createTaskList(weekday) {
     const tasklistRes = await tasks.tasklists.insert({
       requestBody: {
         title: `${weekdaysTranslate[weekday]}`,
@@ -66,7 +55,7 @@ export default async function handler(
     return tasklistId
   }
 
-  async function createTasks({ tasklistId, meal, notes }: createTasks) {
+  async function createTasks({ tasklistId, meal, notes }) {
     const taskmeal = await tasks.tasks.insert({
       requestBody: {
         title: `${mealsTranslate[meal]}`,
@@ -84,7 +73,7 @@ export default async function handler(
     const reversedMeals = day.meals.reverse()
     for (const meal of reversedMeals) {
       const foodsNotes = meal.foods.map(
-        (food: food) =>
+        (food) =>
           `${food.food.charAt(0).toUpperCase() + food.food.slice(1)} ${
             food.quantity
           }`,
@@ -92,14 +81,14 @@ export default async function handler(
       const combinedText = foodsNotes.join('\n')
 
       const taskmealId = await createTasks({
-        tasklistId: tasklistId!,
+        tasklistId,
         meal: meal.meal,
         notes: combinedText,
       })
 
       const mealData = {
-        task_id: taskmealId!,
-        tasklist_id: tasklistId!,
+        task_id: taskmealId,
+        tasklist_id: tasklistId,
         isCurrent: true,
         user_id: data.userId,
         weekday: day.weekday,
@@ -108,7 +97,7 @@ export default async function handler(
 
       const createdMeal = await prisma.meal.create({ data: mealData })
 
-      const foods = meal.foods.map((item: any) => {
+      const foods = meal.foods.map((item) => {
         return {
           meal_id: createdMeal.id,
           food: item.food,

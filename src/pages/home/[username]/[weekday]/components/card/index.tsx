@@ -42,7 +42,7 @@ interface CardProps {
     taskId: string,
   ) => void
   releaseCheck: (mealId: string, isChecked: boolean) => void
-  src: string
+  src: any
 }
 
 export const meals = {
