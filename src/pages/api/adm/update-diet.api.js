@@ -3,10 +3,6 @@ import { prisma } from '@/lib/prisma'
 import { google } from 'googleapis'
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).end()
-  }
-
   const data = req.body
 
   const mealsTranslate = {
