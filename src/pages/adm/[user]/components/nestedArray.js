@@ -10,12 +10,7 @@ import {
 } from '../styles'
 import { PlusCircle, Trash } from 'phosphor-react'
 
-export default function NestedArray({
-  control,
-  register,
-  weekday,
-  index,
-}: any) {
+export default function NestedArray({ control, register, weekday, index }) {
   const { fields, remove, append } = useFieldArray({
     control,
     name: `data.${weekday}.meals.${index}.foods`,
@@ -31,7 +26,7 @@ export default function NestedArray({
                 type="text"
                 placeholder="Alimento.."
                 {...register(
-                  `data.${weekday}.meals.${index}.foods.${foodIndex}.food` as const,
+                  `data.${weekday}.meals.${index}.foods.${foodIndex}.food`,
                 )}
                 defaultValue={item.food}
               />
@@ -39,7 +34,7 @@ export default function NestedArray({
                 placeholder="gr.."
                 defaultValue={item.quantity}
                 {...register(
-                  `data.${weekday}.meals.${index}.foods.${foodIndex}.quantity` as const,
+                  `data.${weekday}.meals.${index}.foods.${foodIndex}.quantity`,
                 )}
               />
             </div>

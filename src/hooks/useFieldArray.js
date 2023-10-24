@@ -9,12 +9,7 @@ import {
 import { PlusCircle, Trash } from 'phosphor-react'
 import { useFieldArray } from 'react-hook-form'
 
-export function FieldsForFoods(
-  index: number,
-  weekday: number,
-  control: any,
-  register: any,
-) {
+export function FieldsForFoods(index, weekday, control, register) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: `data.${weekday}.meals.${index}.foods`,
@@ -30,13 +25,13 @@ export function FieldsForFoods(
                 type="text"
                 placeholder="Alimento.."
                 {...register(
-                  `data.${weekday}.meals.${index}.foods.${foodIndex}.food` as const,
+                  `data.${weekday}.meals.${index}.foods.${foodIndex}.food`,
                 )}
               />
               <QtdInput
                 placeholder="gr.."
                 {...register(
-                  `data.${weekday}.meals.${index}.foods.${foodIndex}.quantity` as const,
+                  `data.${weekday}.meals.${index}.foods.${foodIndex}.quantity`,
                 )}
               />
             </div>
