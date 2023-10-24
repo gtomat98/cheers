@@ -22,17 +22,14 @@ export default withAuth(
           }
         },
         user() {
-          if (
-            !token.verified &&
-            pathname !== '/register/physical-information'
-          ) {
+          if (pathname === '/register/connect-google') {
+            return
+          }
+          if (!token.verified && token.age) {
             req.nextUrl.pathname = 'loading'
             return NextResponse.redirect(req.nextUrl)
           }
-          if (
-            !pathname.includes(`/home/${token.username}`) &&
-            req.nextUrl.pathname !== '/register/physical-information'
-          ) {
+          if (!pathname.includes(`/home/${token.username}`) && token.verified) {
             req.nextUrl.pathname = `/home/${token.username}`
             return NextResponse.redirect(req.nextUrl)
           }

@@ -1,5 +1,33 @@
 import { styled, keyframes } from '@/styles'
 
+export const Container = styled('div', {
+  display: 'flex',
+  height: '100vh',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: '0 10vw',
+})
+
+export const Divisor = styled('div', {
+  maxWidth: 1200,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 24,
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  h1: {
+    fontSize: 28,
+    color: '$textTitle',
+    fontWeight: 'bold',
+  },
+
+  p: {
+    fontSize: 14,
+    color: '$text',
+  },
+})
+
 const loadingAnimation = keyframes({
   '0%': {
     top: '36px',

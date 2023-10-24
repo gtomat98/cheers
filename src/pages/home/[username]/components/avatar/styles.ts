@@ -80,6 +80,7 @@ const slideLeftAndFade = keyframes({
 })
 
 const contentStyles = {
+  zIndex: 100000000000,
   minWidth: 180,
   background: 'rgba(255, 255, 255, 0.025)',
   backdropFilter: 'blur(10px)',
@@ -103,6 +104,8 @@ export const DropdownMenuSubContent = styled(
   DropdownMenu.SubContent,
   contentStyles,
 )
+
+export const DropdownMenuGroup = styled(DropdownMenu.Group, {})
 
 export const DropdownMenuArrow = styled(DropdownMenu.Arrow, {
   fill: 'white',

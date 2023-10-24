@@ -1,9 +1,9 @@
 import { styled } from '@/styles'
 
-export const MainContainer = styled('main', {
-  maxWidth: 572,
+export const Container = styled('main', {
+  maxWidth: 800,
   margin: '60px auto 16px',
-  padding: '0 16px',
+  padding: '0 10vw',
 })
 
 export const Header = styled('div', {
@@ -23,27 +23,74 @@ export const Header = styled('div', {
 })
 
 export const Box = styled('div', {
-  maxWidth: 720,
   marginTop: 48,
+  padding: 24,
   borderRadius: 4,
-  background: '$baseBox',
-  padding: '1rem',
-
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  gap: 24,
-
-  '> span': {
-    color: '$text',
-    fontSize: 18,
-    fontFamily: '$default',
-  },
+  background:
+    'linear-gradient(19deg, rgba(62, 54, 128, 0.1), rgba(49, 43, 93, 0.5))',
+  backdropFilter: 'blur(5px)',
 
   img: {
-    borderRadius: '50%',
-    outline: '2px solid $orange',
-    outlineOffset: '5px',
+    borderRadius: '100%',
+    outline: '1px solid $white',
+    outlineOffset: '3px',
+  },
+})
+
+export const TableContainer = styled('div', {
+  width: '100%',
+  overflow: 'auto',
+
+  '& table': {
+    width: '100%',
+    overflow: 'scroll',
+    borderCollapse: 'collapse',
+    minWidth: 800,
+
+    thead: {
+      background:
+        'linear-gradient(19deg, rgba(62, 54, 128, 0.1), rgba(49, 43, 93, 0.5))',
+      backdropFilter: 'blur(5px)',
+      '& tr': {
+        backdropFilter: 'blur(5px)',
+        transition: 'all 200ms',
+      },
+    },
+
+    '& th': {
+      padding: '1rem',
+      textAlign: 'left',
+      fontFamily: '$default',
+      fontWeight: 'bold',
+      color: '$textTitle',
+
+      fontSize: 16,
+      lineHeight: 1.6,
+
+      '&:first-child': {
+        borderTopLeftRadius: 4,
+        paddingLeft: '1.5rem',
+      },
+      '&:last-child': {
+        borderTopRightRadius: 4,
+        paddingRight: '1.5rem',
+      },
+    },
+
+    '& td': {
+      padding: '1rem',
+      color: '$text',
+      fontFamily: '$default',
+      fontSize: 16,
+      lineHeight: 1.6,
+
+      '&:first-child': {
+        paddingLeft: '1.5rem',
+      },
+      '&:last-child': {
+        paddingRight: '1.5rem',
+      },
+    },
   },
 })
 
@@ -64,13 +111,16 @@ export const Title = styled('h1', {
 
 export const FormContainer = styled('div', {
   marginTop: '3rem',
+  maxWidth: 800,
 })
 
 export const Form = styled('form', {
   marginTop: 32,
   padding: 24,
   borderRadius: 6,
-  background: '$baseBox',
+  background:
+    'linear-gradient(19deg, rgba(62, 54, 128, 0.3), rgba(49, 43, 93, 0.5))',
+  backdropFilter: 'blur(5px)',
 
   display: 'flex',
   flexDirection: 'column',
@@ -82,7 +132,6 @@ export const MealsBox = styled('ul', {
   flexDirection: 'column',
 
   borderRadius: 6,
-  background: '$baseBox',
 })
 
 export const MealContainer = styled('ul', {
@@ -114,17 +163,22 @@ export const MealItem = styled('li', {
     alignItems: 'center',
     width: '100%',
     display: 'flex',
-    gap: 8,
+    gap: 16,
   },
 })
 
 export const ItemInput = styled('input', {
   all: 'unset',
+  trasition: 'all 200ms',
+
+  boxSizing: 'border-box',
 
   padding: '12px 16px',
   width: '90%',
   borderRadius: 4,
-  background: '$baseContent',
+  background:
+    'linear-gradient(19deg, rgba(62, 54, 128, 0.3), rgba(49, 43, 93, 0.1))',
+  backdropFilter: 'blur(5px)',
 
   cursor: 'text',
 
@@ -137,10 +191,14 @@ export const ItemInput = styled('input', {
 
 export const QtdInput = styled('input', {
   all: 'unset',
+  boxSizing: 'border-box',
+  trasition: 'all 200ms',
   width: '10%',
   padding: '12px 16px',
   borderRadius: 4,
-  background: '$baseContent',
+  background:
+    'linear-gradient(19deg, rgba(62, 54, 128, 0.3), rgba(49, 43, 93, 0.1))',
+  backdropFilter: 'blur(5px)',
 
   cursor: 'text',
 
@@ -153,6 +211,8 @@ export const QtdInput = styled('input', {
 
 export const RemoveFoodButton = styled('button', {
   all: 'unset',
+  boxSizing: 'border-box',
+  trasition: 'all 200ms',
 
   borderRadius: 6,
   padding: '12px',
@@ -203,7 +263,8 @@ export const AddFoodButton = styled('button', {
   justifyContent: 'center',
   gap: 8,
 
-  background: '$baseBackground',
+  background: 'rgba(18,15,40, 1)',
+  backdropFilter: 'blur(5px)',
 
   cursor: 'pointer',
 

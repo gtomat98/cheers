@@ -10,7 +10,6 @@ export function PrismaAdapter(
 ): Adapter {
   return {
     async createUser(user) {
-      console.log('createUser: ', user)
       const { '@cheers:userId': userIdOnCookies } = parseCookies({ req })
       if (!userIdOnCookies) {
         throw new Error('User Id not found on cookies')
@@ -44,7 +43,6 @@ export function PrismaAdapter(
     },
 
     async getUser(id) {
-      console.log('getUser: ', id)
       const user = await prisma.user.findUnique({
         where: {
           id,
@@ -67,7 +65,6 @@ export function PrismaAdapter(
     },
 
     async getUserByEmail(email) {
-      console.log('getUserByEmail: ', email)
       const user = await prisma.user.findUnique({
         where: {
           email,
@@ -107,6 +104,10 @@ export function PrismaAdapter(
 
       const { user } = account
 
+      if (user.isInactive) {
+        return null
+      }
+
       return {
         userExists: true,
         id: user.id,
@@ -120,7 +121,6 @@ export function PrismaAdapter(
     },
 
     async updateUser(user) {
-      console.log('updateUser: ', user)
       const prismaUser = await prisma.user.update({
         where: {
           id: user.id!,
@@ -213,7 +213,6 @@ export function PrismaAdapter(
     },
 
     async updateSession({ sessionToken, userId, expires }) {
-      console.log('Session updated')
       const prismaSession = await prisma.session.update({
         where: {
           session_token: sessionToken,

@@ -10,6 +10,7 @@ interface updateTaskProps {
   mealId: string
   isChecked: boolean
   tasklist: string
+  taskId: string
   title: Meals
   mealHistoricId: string
 }
@@ -22,9 +23,9 @@ export default async function useFetch(
     return res.status(405).end()
   }
   const data = req.body
-  console.log(data)
   const {
     mealId: task,
+    taskId,
     isChecked,
     tasklist,
     title,
@@ -70,10 +71,10 @@ export default async function useFetch(
     try {
       counter++
       await api.tasks.update({
-        task,
+        task: taskId,
         tasklist,
         requestBody: {
-          id: task,
+          id: taskId,
           status: isChecked ? 'completed' : 'needsAction',
           title,
         },

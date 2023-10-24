@@ -22,7 +22,6 @@ export default async function handler(
       },
       data: { isInactive: true },
     })
-    console.log('teste')
 
     res.status(200).end()
   } catch (error) {

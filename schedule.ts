@@ -36,4 +36,5 @@ const executeTask = async () => {
   FetchApi('/server/blockPastMeals', 'post', currentDate)
 }
 
-cron.schedule('*/10 * * * * *', executeTask)
+// Agendar para executar todos os dias à meia-noite
+cron.schedule('0 0 * * *', executeTask)

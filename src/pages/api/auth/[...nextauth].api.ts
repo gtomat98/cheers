@@ -72,7 +72,17 @@ export function buildNextAuthOptions(
           })
           token.verified = userDatabase?.verified
         }
-        return { ...user, verified: userDatabase?.verified, ...token }
+        return {
+          ...user,
+          verified: userDatabase?.verified,
+          height: userDatabase?.height,
+          weight: userDatabase?.weight,
+          activityFactor: userDatabase?.activity_factor,
+          gender: userDatabase?.gender,
+          role: userDatabase?.role,
+          ...token,
+          age: userDatabase?.age,
+        }
       },
 
       async session({ session, token }) {
@@ -88,6 +98,7 @@ export function buildNextAuthOptions(
           verified: user?.verified,
           username: user?.username,
           avatarUrl: user?.avatar_url,
+          lastUpdate: user?.last_update,
         }
       },
     },

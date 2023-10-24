@@ -7,11 +7,14 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { useContext } from 'react'
 import { UserContext } from '@/contexts/userContext'
 import Card from './components/card'
+import DialogDemo from './components/access'
 
 interface HomeProps {
   user: {
     name: string
     avatarUrl: string
+    firstAccess: boolean
+    id: string
   }
 }
 
@@ -26,6 +29,7 @@ export default function Home({ user }: HomeProps) {
 
   return (
     <>
+      {user.firstAccess && <DialogDemo user_id={user.id} />}
       <Container>
         <Box>
           <Title>
@@ -77,6 +81,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       user: {
         name: user.name,
         avatarUrl: user.avatar_url,
+        firstAccess: user.first_access,
+        id: user.id,
       },
     },
     revalidate: 60 * 60 * 24, // 1 day

@@ -1,5 +1,4 @@
 import { Check } from 'phosphor-react'
-import Lunch from '../../../../../../assets/Meals/luch.png'
 import Image from 'next/image'
 import {
   AccordionContent,
@@ -10,6 +9,7 @@ import {
   CheckboxIndicator,
   CheckboxRoot,
   Container,
+  Divider,
   FooterContainer,
   HeaderContainer,
   Li,
@@ -22,6 +22,7 @@ interface CardProps {
   meal: {
     id: string
     meal_id: string
+    task_id: string
     meal: Meals
     isCompleted: boolean
     isDone: boolean
@@ -38,8 +39,18 @@ interface CardProps {
     mealId: string,
     meal: Meals,
     mealHistoricId: string,
+    taskId: string,
   ) => void
   releaseCheck: (mealId: string, isChecked: boolean) => void
+  src: string
+}
+
+export const meals = {
+  breakfast: 'café da manhã',
+  lunch: 'almoço',
+  snack: 'café da tarde',
+  dinner: 'jantar',
+  supper: 'ceia',
 }
 
 export default function Card({
@@ -47,10 +58,11 @@ export default function Card({
   releaseCheck,
   isCompleted,
   releaseMealChecked,
+  src,
 }: CardProps) {
   function handleReleaseMealChecked(data: boolean) {
     releaseCheck(meal.meal_id, data)
-    releaseMealChecked(data, meal.meal_id, meal.meal, meal.id)
+    releaseMealChecked(data, meal.meal_id, meal.meal, meal.id, meal.task_id)
   }
   return (
     <Li>
@@ -59,10 +71,15 @@ export default function Card({
           <AccordionHeader>
             <Container>
               <HeaderContainer>
-                <Image src={Lunch} width={75} quality={100} alt="" priority />
-                <h3>
-                  {meal.meal.charAt(0).toUpperCase() + meal.meal.slice(1)}
-                </h3>
+                <Image
+                  src={src}
+                  width={75}
+                  quality={100}
+                  alt=""
+                  priority
+                  style={{ borderRadius: '9999999px' }}
+                />
+                <h3>{meal.meal}</h3>
 
                 <div>
                   <CheckboxRoot
@@ -82,10 +99,10 @@ export default function Card({
               <AccordionContent>
                 {meal.foods.map((food) => {
                   return (
-                    <div key={food.food}>
+                    <Divider key={food.food}>
                       <p>{food.food}</p>
                       <span>{food.quantity}</span>
-                    </div>
+                    </Divider>
                   )
                 })}
               </AccordionContent>

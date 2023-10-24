@@ -17,8 +17,6 @@ export default function ConnectGoogle() {
   const session = useSession()
   const router = useRouter()
 
-  console.log(session, session.data)
-
   const hasAuthError = !!router.query.error
   const isSignedIn = session.status === 'authenticated'
 

@@ -6,31 +6,96 @@ export const Container = styled('main', {
   padding: '0 10vw',
 })
 
-export const Header = styled('header', {
-  maxWidth: 1200,
-  padding: '0 10vw',
-  margin: '60px auto 16px',
+export const HeaderFixed = styled('div', {
+  width: '100%',
+  position: 'fixed',
+  top: 0,
+  zIndex: 100000000000000,
+})
+
+export const HeaderContainer = styled('div', {
+  background:
+    'linear-gradient(19deg, rgba(62, 54, 128, 0.5), rgba(49, 43, 93, 0.01))',
+  backdropFilter: 'blur(30px)',
   display: 'flex',
-  justifyContent: 'space-between',
-  gap: 48,
+  margin: 'auto',
+  padding: '0 10vw',
+  marginLeft: 'auto',
+  justifyContent: 'center',
   alignItems: 'center',
 })
 
+export const Header = styled('header', {
+  maxWidth: 1200,
+  boxSizing: 'border-box',
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '12px 0px',
+
+  '@media (max-width: 960px)': {
+    '&>a>img': {
+      width: '150px',
+    },
+    '&>div>label': {
+      width: '300px',
+    },
+  },
+
+  '@media (max-width: 800px)': {
+    '&>a>img': {
+      width: '120px',
+    },
+    '&>div>label': {
+      width: '250px',
+    },
+  },
+
+  '@media (max-width: 600px)': {
+    '&>a>img': {
+      width: '100px',
+    },
+
+    '&>div>label': {
+      width: '180px',
+    },
+  },
+
+  '@media (max-width: 450px)': {
+    justifyContent: 'center',
+    '&>a>img': {
+      width: '0px',
+    },
+
+    '&>div>label': {
+      width: '150px',
+    },
+  },
+})
+
 export const InputContainer = styled('label', {
+  mixBlendMode: 'color-burn',
+
   width: 400,
   display: 'flex',
   alignItems: 'center',
-  cursor: 'pointer',
+  cursor: 'text',
   gap: 8,
-  borderRadius: 6,
+  borderRadius: 4,
   justifyContent: 'space-between',
-  padding: '8px 12px',
+  padding: '6px 12px',
   backgroundColor: 'transparent',
   boxSizing: 'border-box',
-  border: '1px solid $text',
+  boxShadow: 'rgba(62, 54, 128, 0.3) 0px 0px 0px 1px',
+
+  transition: 'all 200ms',
+  '&:hover': {
+    boxShadow: 'rgba(62, 54, 128, 0.6) 0px 0px 0px 1px',
+  },
 
   '&:focus-within': {
-    border: '1px solid $baseBorder',
+    boxShadow: 'rgba(62, 54, 128, 1) 0px 0px 0px 1px',
   },
 
   svg: {
@@ -42,105 +107,125 @@ export const Input = styled('input', {
   all: 'unset',
   boxSizing: 'border-box',
   padding: 8,
-  maxWidth: 320,
-  minWidth: 0,
+  width: '100%',
+  minWidth: 100,
   backgroundColor: 'transparent',
-  fontSize: 16,
+  fontSize: 14,
   color: '$textTitle',
 })
 
-export const Box = styled('div', {
-  maxWidth: 572,
-  marginTop: 48,
-  borderRadius: 8,
+export const Separator = styled('div', {
+  mixBlendMode: 'color-burn',
+  boxSizing: 'border-box',
+  paddingTop: 15,
+  paddingBottom: 15,
+  width: 1,
+  borderRadius: '100%',
+  background: 'rgba(62, 54, 128, 0.3)',
+})
 
+export const Grouper = styled('div', {
+  mixBlendMode: 'color-burn',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 16,
+})
+
+export const Box = styled('div', {
+  maxWidth: 1200,
+  marginTop: 142,
+
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: 24,
+
+  padding: 16,
+  borderRadius: 4,
+  background:
+    'linear-gradient(19deg, rgba(62, 54, 128, 0.1), rgba(49, 43, 93, 0.5))',
+  backdropFilter: 'blur(5px)',
+
+  transition: 'all 200ms',
+
+  '> span': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 30,
+    height: 30,
+    background: '$baseBorder',
+    borderRadius: 4,
+    fontWeight: 'bold',
+    color: '$textTitle',
+    fontSize: 12,
+    fontFamily: '$roboto',
+  },
+})
+
+export const TextContainer = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   gap: 24,
 
-  '> span': {
-    color: '$text',
+  h2: {
+    color: '$textTitle',
     fontSize: 18,
-    fontFamily: '$default',
-  },
-})
-
-export const Title = styled('h1', {
-  color: '$textTitle',
-  fontSize: 24,
-  fontFamily: '$default',
-  lineHeight: '80%',
-
-  span: {
-    fontFamily: '$default',
     fontWeight: 'bold',
+    fontFamily: '$roboto',
+
+    '@media (max-width: 600px)': {
+      fontSize: 16,
+    },
   },
 })
 
-export const FormContainer = styled('form', {
+export const Span = styled('div', {
+  marginTop: 142,
   display: 'flex',
-  marginTop: '4.5rem',
-  width: '100%',
   alignItems: 'center',
-
-  fieldset: {
-    width: '100%',
-    border: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    color: '$text',
-
-    h2: {
-      fontSize: '1.125rem',
-    },
-
-    span: {
-      color: '$white',
-      width: '1.25rem',
-      height: '1.25rem',
-      fontSize: '0.875rem',
-      fontWeight: 'bold',
-      backgroundColor: '$baseBorder',
-      borderRadius: '9999px',
-      textAlign: 'center',
-      lineHeight: '150%',
-    },
+  justifyContent: 'center',
+  span: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    fontFamily: '$roboto',
+    color: '$textTitle',
   },
 })
 
 export const UsersList = styled('ul', {
-  marginTop: '1rem',
+  marginTop: 16,
   width: '100%',
   display: 'grid',
-  justifyContent: 'center',
+  justifyContent: 'start',
   gridTemplateColumns: 'repeat(auto-fit, 169px)',
-  gridGap: '2rem 2rem',
+  gridGap: '16px',
   height: 220,
 })
 
 export const User = styled('li', {
-  height: 220,
+  height: 200,
+  boxSizing: 'border-box',
+  padding: 16,
   listStyleType: 'none',
-  background: '$baseContent',
-  borderRadius: 3,
+  background:
+    'linear-gradient(19deg, rgba(62, 54, 128, 0.01), rgba(49, 43, 93, 0.5))',
+  backdropFilter: 'blur(5px)',
+  borderRadius: 4,
   transition: 'all 200ms',
-  boxShadow: '0 0 4px rgba(0,0,0,0.1)',
-  padding: '0rem', // adiciona um padding interno
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
   '&:hover': {},
   h3: {
-    // adiciona um estilo diferente para o nome do usuário
     fontFamily: '$default',
     fontWeight: 'bold',
-    fontSize: '1.125rem',
+    fontSize: 14,
     margin: 0,
     marginBottom: '0.5rem',
     color: '$textTitle',
   },
   p: {
-    // adiciona um estilo diferente para as informações de idade e gênero
     fontFamily: '$roboto',
     fontSize: '0.875rem',
     color: '$text',
@@ -149,24 +234,21 @@ export const User = styled('li', {
 })
 
 export const ImageContainer = styled('div', {
-  padding: '1rem',
-  height: 30,
   borderRadius: '4px 4px 0px 0px',
+  boxSizing: 'border-box',
   display: 'flex',
   justifyContent: 'center',
   img: {
-    outline: '2px solid $white',
+    outline: '1px solid $white',
     outlineOffset: '3px',
-    borderRadius: '50%',
-    width: '80px',
-    height: '80px',
+    borderRadius: '100%',
+    width: '60px',
+    height: '60px',
     objectFit: 'cover',
   },
 })
 
 export const FooterContainer = styled('footer', {
-  marginTop: '5rem',
-  padding: '1rem',
   display: 'flex',
   justifyContent: 'space-between',
 })

@@ -20,12 +20,9 @@ export function FieldsForFoods(
     name: `data.${weekday}.meals.${index}.foods`,
   })
 
-  console.log(fields)
-
   return (
     <>
       {fields.map((item, foodIndex) => {
-        console.log(item.food)
         return (
           <MealItem key={item.id}>
             <div>

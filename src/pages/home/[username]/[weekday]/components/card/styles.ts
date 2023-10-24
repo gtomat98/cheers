@@ -50,6 +50,8 @@ export const HeaderContainer = styled('div', {
     top: '0%',
     transform: 'translate(-30%, -30%)',
   },
+
+  marginBottom: 24,
 })
 
 export const FooterContainer = styled('div', {
@@ -164,4 +166,11 @@ export const CheckboxIndicator = styled(Checkbox.Indicator, {
   alignItems: 'center',
   justifyContent: 'center',
   filter: 'contrast(120%) brightness(0.8) saturate(120%)',
+})
+
+export const Divider = styled('div', {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: '16px',
+  color: '$text',
 })

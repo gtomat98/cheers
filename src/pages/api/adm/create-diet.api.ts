@@ -20,37 +20,45 @@ export default async function handler(
 
   const data = req.body
 
+  const weekdaysTranslate = {
+    sunday: 'Domingo',
+    monday: 'Segunda',
+    tuesday: 'Terça',
+    wednesday: 'Quarta',
+    thursday: 'Quinta',
+    friday: 'Sexta',
+    saturday: 'Sábado',
+  }
+
+  const mealsTranslate = {
+    breakfast: 'Café da manhã',
+    lunch: 'Almoço',
+    snack: 'Café da tarde',
+    dinner: 'Jantar',
+    supper: 'Ceia',
+  }
+
+  if (data.update) {
+    await prisma.meal.updateMany({
+      where: {
+        user_id: data.userId,
+        isCurrent: true,
+      },
+      data: {
+        isCurrent: false,
+      },
+    })
+  }
+
   const tasks = google.tasks({
     version: 'v1',
     auth: await getGoogleOAuthToken(data.data.user_id),
   })
 
   async function createTaskList(weekday: string) {
-    if (data.update) {
-      const tasklistId = await prisma.meal.findFirst({
-        where: {
-          isCurrent: true,
-        },
-        select: {
-          tasklist_id: true,
-        },
-      })
-
-      await prisma.meal.updateMany({
-        where: {
-          user_id: data.userId,
-          isCurrent: true,
-        },
-        data: {
-          isCurrent: false,
-        },
-      })
-
-      return tasklistId?.tasklist_id
-    }
     const tasklistRes = await tasks.tasklists.insert({
       requestBody: {
-        title: `${weekday.charAt(0).toUpperCase() + weekday.slice(1)}`,
+        title: `${weekdaysTranslate[weekday]}`,
       },
     })
 
@@ -59,31 +67,9 @@ export default async function handler(
   }
 
   async function createTasks({ tasklistId, meal, notes }: createTasks) {
-    if (data.update) {
-      const taskId = await prisma.meal.findFirst({
-        where: {
-          isCurrent: true,
-          tasklist_id: tasklistId,
-        },
-        select: {
-          task_id: true,
-        },
-      })
-      if (taskId?.task_id) {
-        await tasks.tasks.update({
-          task: taskId!.task_id,
-          tasklist: `${tasklistId}`,
-          requestBody: {
-            title: `${meal}`,
-            notes: `${notes} `,
-          },
-        })
-        return taskId?.task_id
-      }
-    }
     const taskmeal = await tasks.tasks.insert({
       requestBody: {
-        title: `${meal}`,
+        title: `${mealsTranslate[meal]}`,
         notes: `${notes} `,
       },
       tasklist: `${tasklistId}`,
@@ -112,11 +98,10 @@ export default async function handler(
       })
 
       const mealData = {
-        id: taskmealId!,
+        task_id: taskmealId!,
         tasklist_id: tasklistId!,
         isCurrent: true,
         user_id: data.userId,
-        completed: false,
         weekday: day.weekday,
         meal: meal.meal,
       }
@@ -136,13 +121,14 @@ export default async function handler(
   }
 
   const today = new Date().getDay().toString() // Convertendo o dia atual para string
+  const weekdayNum = new Date().getDay() // Obtém o dia da semana atual (0 a 6)
 
   const meals = await prisma.$queryRaw`
   INSERT INTO "mealsHistoric" ("id", "meal_id", "created_at", "isCompleted", "isDone")
   SELECT
     gen_random_uuid(),
     m.id AS meal_id,
-    date_trunc('day', now()) + (weekday_num * interval '1 day') AS created_at,
+    date_trunc('day', now()) + ((weekday_num - ${weekdayNum}) * interval '1 day') AS created_at,
     false AS isCompleted,
     false AS isDone
   FROM (
@@ -169,10 +155,10 @@ export default async function handler(
 
     data: {
       verified: true,
+      is_diet_updated: true,
     },
   })
 
-  console.log(meals)
   return res.status(200).json({
     data,
   })

@@ -1,17 +1,14 @@
-import Image from 'next/image'
-
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { prisma } from '@/lib/prisma'
 import {
-  Box,
   Form,
   Header,
-  MainContainer,
-  Title,
   Button,
   FormContainer,
   MealsBox,
   ButtonContainer,
+  Container,
+  TableContainer,
 } from './styles'
 import Link from 'next/link'
 import { MultiStep } from '@ignite-ui/react'
@@ -26,9 +23,27 @@ import { useRouter } from 'next/router'
 import { AxiosError } from 'axios'
 import { ActivityFactor, Gender, Meal } from '@prisma/client'
 
+export const weekdays = {
+  sunday: 'Domingo',
+  monday: 'Segunda',
+  tuesday: 'Terça',
+  wednesday: 'Quarta',
+  thursday: 'Quinta',
+  friday: 'Sexta',
+  saturday: 'Sábado',
+}
+
+const activity_factor = {
+  sedentary: 'Sedentário',
+  light: 'Leve',
+  moderate: 'Moderado',
+  high: 'Alto',
+}
+
 interface DietProps {
   user: {
     id: string
+    verified: boolean
     username: string
     name: string
     email: string
@@ -77,379 +92,391 @@ export default function UserDetails({ user, meals }: DietProps) {
   const [weekday, setWeekday] = useState(0)
   const [direction, setDirection] = useState(0)
 
-  const { handleSubmit, control, register, getValues, reset } =
-    useForm<mealDietInformationFormData>({
-      resolver: zodResolver(mealDietInformationSchema),
-      defaultValues: {
-        data: meals || [
-          {
-            weekday: 'sunday',
-            meals: [
-              {
-                meal: 'breakfast',
-                foods: [
-                  {
-                    food: '',
-                    quantity: '',
-                  },
-                ],
-              },
-              {
-                meal: 'lunch',
-                foods: [
-                  {
-                    food: '',
-                    quantity: '',
-                  },
-                ],
-              },
-              {
-                meal: 'snack',
-                foods: [
-                  {
-                    food: '',
-                    quantity: '',
-                  },
-                ],
-              },
-              {
-                meal: 'dinner',
-                foods: [
-                  {
-                    food: '',
-                    quantity: '',
-                  },
-                ],
-              },
-              {
-                meal: 'supper',
-                foods: [
-                  {
-                    food: '',
-                    quantity: '',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            weekday: 'monday',
-            meals: [
-              {
-                meal: 'breakfast',
-                foods: [
-                  {
-                    food: 'arroz',
-                    quantity: '200',
-                  },
-                ],
-              },
-              {
-                meal: 'lunch',
-                foods: [
-                  {
-                    food: 'arroz',
-                    quantity: '200',
-                  },
-                ],
-              },
-              {
-                meal: 'snack',
-                foods: [
-                  {
-                    food: 'arroz',
-                    quantity: '200',
-                  },
-                ],
-              },
-              {
-                meal: 'dinner',
-                foods: [
-                  {
-                    food: 'arroz',
-                    quantity: '200',
-                  },
-                ],
-              },
-              {
-                meal: 'supper',
-                foods: [
-                  {
-                    food: 'arroz',
-                    quantity: '200',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            weekday: 'tuesday',
-            meals: [
-              {
-                meal: 'breakfast',
-                foods: [
-                  {
-                    food: 'feijao',
-                    quantity: '100',
-                  },
-                ],
-              },
-              {
-                meal: 'lunch',
-                foods: [
-                  {
-                    food: 'feijao',
-                    quantity: '100',
-                  },
-                ],
-              },
-              {
-                meal: 'snack',
-                foods: [
-                  {
-                    food: 'feijao',
-                    quantity: '100',
-                  },
-                ],
-              },
-              {
-                meal: 'dinner',
-                foods: [
-                  {
-                    food: 'feijao',
-                    quantity: '100',
-                  },
-                ],
-              },
-              {
-                meal: 'supper',
-                foods: [
-                  {
-                    food: 'feijao',
-                    quantity: '100',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            weekday: 'wednesday',
-            meals: [
-              {
-                meal: 'breakfast',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'lunch',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'snack',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'dinner',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'supper',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            weekday: 'thursday',
-            meals: [
-              {
-                meal: 'breakfast',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'lunch',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'snack',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'dinner',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'supper',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            weekday: 'friday',
-            meals: [
-              {
-                meal: 'breakfast',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'lunch',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'snack',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'dinner',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'supper',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            weekday: 'saturday',
-            meals: [
-              {
-                meal: 'breakfast',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'lunch',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'snack',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'dinner',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-              {
-                meal: 'supper',
-                foods: [
-                  {
-                    food: 'coxinha',
-                    quantity: '400',
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    })
+  const {
+    handleSubmit,
+    control,
+    register,
+    getValues,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<mealDietInformationFormData>({
+    resolver: zodResolver(mealDietInformationSchema),
+    defaultValues: {
+      data: (meals.length > 1 && meals) || [
+        {
+          weekday: 'sunday',
+          meals: [
+            {
+              meal: 'breakfast',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'lunch',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'snack',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'dinner',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'supper',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          weekday: 'monday',
+          meals: [
+            {
+              meal: 'breakfast',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'lunch',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'snack',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'dinner',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'supper',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          weekday: 'tuesday',
+          meals: [
+            {
+              meal: 'breakfast',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'lunch',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'snack',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'dinner',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'supper',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          weekday: 'wednesday',
+          meals: [
+            {
+              meal: 'breakfast',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'lunch',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'snack',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'dinner',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'supper',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          weekday: 'thursday',
+          meals: [
+            {
+              meal: 'breakfast',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'lunch',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'snack',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'dinner',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'supper',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          weekday: 'friday',
+          meals: [
+            {
+              meal: 'breakfast',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'lunch',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'snack',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'dinner',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'supper',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          weekday: 'saturday',
+          meals: [
+            {
+              meal: 'breakfast',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'lunch',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'snack',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'dinner',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+            {
+              meal: 'supper',
+              foods: [
+                {
+                  food: '',
+                  quantity: '',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  })
 
   const router = useRouter()
 
   async function handleCreateDiet(data: mealDietInformationFormData) {
-    if (weekday > 5) {
+    if (weekday > 5 && direction === 1) {
       const userId = user.id
       try {
-        await api.post('/adm/create-diet', {
-          userId,
-          data,
-          update: !!meals,
-        })
+        if (user.verified) {
+          await api.post('/adm/update-diet', {
+            userId,
+            data,
+          })
+        } else {
+          await api.post('/adm/create-diet', {
+            userId,
+            data,
+            update: meals.length > 0 && true,
+          })
+        }
         await router.push('/adm/dashboard')
       } catch (err) {
-        console.log(err)
         if (err instanceof AxiosError && err?.response?.data?.message) {
           alert(err.response.data.message)
         }
@@ -460,7 +487,6 @@ export default function UserDetails({ user, meals }: DietProps) {
       } else {
         setWeekday(weekday + 1)
       }
-      console.log(data)
       reset({ data: data.data })
     }
   }
@@ -470,27 +496,37 @@ export default function UserDetails({ user, meals }: DietProps) {
       <Header>
         <Link href="/adm/dashboard"></Link>
       </Header>
-      <MainContainer>
-        <Box>
-          <div>
-            <Image
-              src={user.avatarUrl}
-              height={120}
-              width={120}
-              quality={100}
-              priority
-              alt=""
-            />
-            <Title>{user.name}</Title>
-            <p>Peso: {user.weight} KG</p>
-            <p>Altura: {user.height} CM</p>
-            <p>Idade: {user.age} Anos</p>
-            <p>Nivel de atividades: {user.activityFactor}</p>
-          </div>
-        </Box>
+      <Container>
+        <TableContainer>
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Peso</th>
+                <th>Altura</th>
+                <th>Idade</th>
+                <th>Gênero</th>
+                <th>Custo Energético</th>
+                <th>Já cadastrado?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{user.username}</td>
+                <td>{user.weight} KG</td>
+                <td>{user.height} CM</td>
+                <td>{user.age} Anos</td>
+                <td>{user.gender === 'male' ? 'Masculino' : 'Feminino'}</td>
+                <td>{activity_factor[user.activityFactor]}</td>
+                <td>{user.verified ? 'Sim' : 'Não'}</td>
+              </tr>
+            </tbody>
+          </table>
+        </TableContainer>
+
         <FormContainer>
           <Header>
-            <strong>{getValues(`data.${weekday}.weekday`)}</strong>
+            <strong>{weekdays[getValues(`data.${weekday}.weekday`)]}</strong>
           </Header>
           <MultiStep
             size={getValues('data').length}
@@ -506,8 +542,7 @@ export default function UserDetails({ user, meals }: DietProps) {
 
               <ButtonContainer>
                 <Button
-                  disabled={weekday < 1}
-                  type="submit"
+                  disabled={weekday < 1 || isSubmitting}
                   onClick={() => {
                     setDirection(0)
                   }}
@@ -516,7 +551,7 @@ export default function UserDetails({ user, meals }: DietProps) {
                   {getValues(`data.${weekday - 1}.weekday`)}
                 </Button>
                 <Button
-                  type="submit"
+                  disabled={isSubmitting}
                   onClick={() => {
                     setDirection(1)
                   }}
@@ -528,7 +563,7 @@ export default function UserDetails({ user, meals }: DietProps) {
             </MealsBox>
           </Form>
         </FormContainer>
-      </MainContainer>
+      </Container>
     </>
   )
 }
@@ -541,11 +576,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const id = String(params?.user)
+  const username = String(params?.user)
 
   const user = await prisma.user.findUnique({
     where: {
-      id,
+      username,
     },
   })
 
@@ -570,8 +605,22 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     },
   })
 
-  // Criar um objeto para agrupar as refeições por dia da semana
-  const groupedMealsByDay = meals.reduce((acc, meal) => {
+  const orderedMeals = meals.sort((mealA, mealB) => {
+    const dayOrder = {
+      sunday: 0,
+      monday: 1,
+      tuesday: 2,
+      wednesday: 3,
+      thursday: 4,
+      friday: 5,
+      saturday: 6,
+    }
+
+    return dayOrder[mealA.weekday] - dayOrder[mealB.weekday]
+  })
+
+  // Agrupar os resultados por dia da semana como você fez anteriormente
+  const groupedMealsByDay = orderedMeals.reduce((acc: any, meal: any) => {
     if (!acc[meal.weekday]) {
       acc[meal.weekday] = []
     }
@@ -580,26 +629,27 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }, {})
 
   // Mapear os grupos para a estrutura desejada
-  const result = Object.entries(groupedMealsByDay).map(([weekday, meals]) => {
-    return {
-      weekday,
-      meals: meals.map((meal) => ({
-        meal: meal.meal,
-        foods: meal.foods
-          ? meal.foods.map((food) => ({
-              food: food.food,
-              quantity: food.quantity,
-            }))
-          : [],
-      })),
-    }
-  })
-
-  console.log(result)
+  const result = Object.entries(groupedMealsByDay).map(
+    ([weekday, meals]: any) => {
+      return {
+        weekday,
+        meals: meals.map((meal: any) => ({
+          meal: meal.meal,
+          foods: meal.foods
+            ? meal.foods.map((food: any) => ({
+                food: food.food,
+                quantity: food.quantity,
+              }))
+            : [],
+        })),
+      }
+    },
+  )
 
   return {
     props: {
       user: {
+        verified: user.verified,
         id: user.id,
         username: user.username,
         name: user.name,

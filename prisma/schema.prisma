@@ -1,11 +1,12 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["extendedWhereUnique"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
+  relationMode = "prisma"
 }
 
 enum Gender {
@@ -56,15 +57,15 @@ model MealsHistoric {
 
   mealId Meal @relation(fields: [meal_id], references: [id], onDelete: Cascade)
 
+  @@index([meal_id])
   @@map("mealsHistoric")
 }
 
 model Meal {
-  id          String   @id
+  id          String   @id @default(uuid())
   tasklist_id String
   task_id     String?
   user_id     String
-  completed   Boolean
   isCurrent   Boolean
   weekday     Weekdays
   meal        Meals
@@ -73,6 +74,7 @@ model Meal {
   user          User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
   MealsHistoric MealsHistoric[]
 
+  @@index([user_id])
   @@map("meals")
 }
 
@@ -83,17 +85,22 @@ model food {
   quantity String
   meal     Meal   @relation(fields: [meal_id], references: [id], onDelete: Cascade)
 
+  @@index([meal_id])
   @@map("foods")
 }
 
 model User {
-  id         String  @id @default(uuid())
-  username   String  @unique
-  name       String
-  email      String? @unique
-  avatar_url String?
-  verified   Boolean @default(false)
-  role       Role    @default(notDefined)
+  id              String    @id @default(uuid())
+  username        String    @unique
+  name            String
+  email           String?   @unique
+  avatar_url      String?
+  is_diet_updated Boolean?
+  last_update     DateTime?
+  first_access    Boolean   @default(true)
+
+  verified Boolean @default(false)
+  role     Role    @default(notDefined)
 
   isInactive Boolean @default(false)
 
@@ -128,6 +135,7 @@ model Account {
   user                User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([provider, provider_account_id])
+  @@index([user_id])
   @@map("accounts")
 }
 
@@ -138,5 +146,6 @@ model Session {
   expires       DateTime
   user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
+  @@index([user_id])
   @@map("sessions")
 }

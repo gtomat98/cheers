@@ -70,8 +70,6 @@ export default function ConnectGoogle() {
         gender,
       })
 
-      console.log(data)
-
       await router.push(`/home/${data.username}`)
     } catch (err) {
       if (err instanceof AxiosError && err?.response?.data?.message) {

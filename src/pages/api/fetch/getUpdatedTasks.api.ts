@@ -33,18 +33,10 @@ export default async function useFetch(
     auth: await getGoogleOAuthToken(session.token.id),
   })
 
-  const currentDate = new Date()
-  currentDate.setSeconds(currentDate.getSeconds() - 10)
-  const formattedDate = currentDate.toISOString()
-  console.log()
-
   const meals = await api.tasks.list({
     tasklist,
-    updatedMin: formattedDate,
     showHidden: true,
   })
-
-  console.log(meals.data.items)
 
   return res.status(200).json({
     meals: meals.data.items,

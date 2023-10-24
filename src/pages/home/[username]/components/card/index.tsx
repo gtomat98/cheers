@@ -6,6 +6,16 @@ import { CardProps } from '@/contexts/userContext'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
+export const weekdays = {
+  sunday: 'Domingo',
+  monday: 'Segunda',
+  tuesday: 'Terça',
+  wednesday: 'Quarta',
+  thursday: 'Quinta',
+  friday: 'Sexta',
+  saturday: 'Sábado',
+}
+
 export default function Card({ color, planet, weekday }: CardProps) {
   const router = useRouter()
   return (
@@ -16,7 +26,9 @@ export default function Card({ color, planet, weekday }: CardProps) {
       }}
     >
       <Image src={planet} alt="" width={80} quality={100} priority />
-      <header>{weekday.charAt(0).toUpperCase() + weekday.slice(1)}</header>
+      <header>
+        {weekdays[weekday].charAt(0).toUpperCase() + weekdays[weekday].slice(1)}
+      </header>
 
       <Link href={`${router.asPath}/${weekday}?callbackUrl=${router.asPath}`}>
         <ButtonStyled>

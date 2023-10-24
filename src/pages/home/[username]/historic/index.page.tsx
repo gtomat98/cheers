@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { GetServerSideProps } from 'next'
-import { HistoryContainer, HistoryList, Status } from './styles'
+import { HistoryContainer, HistoryList, Status, Box } from './styles'
 import { prisma } from '@/lib/prisma'
 import { buildNextAuthOptions } from '@/pages/api/auth/[...nextauth].api'
 import { getServerSession } from 'next-auth'
@@ -29,51 +29,164 @@ interface HistoricProps {
 }
 
 export default function Historic({ data }: HistoricProps) {
+  const weekDays = [
+    'Domingo',
+    'Segunda-feira',
+    'Terça-feira',
+    'Quarta-feira',
+    'Quinta-feira',
+    'Sexta-feira',
+    'Sábado',
+  ]
+
   return (
-    <>
-      <HistoryContainer>
-        <HistoryList>
-          <table>
-            <thead>
-              <tr>
-                <th>Dia</th>
-                <th>Refeição</th>
-                <th>Data</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((meals) => {
-                return (
-                  <Fragment key={meals.createdAt}>
-                    {meals.meals.map((meal) => {
-                      return (
-                        <tr key={meal.id}>
-                          <td>{meal.weekday}</td>
-                          <td>{meal.meal}</td>
-                          <td>{meal.createdAt}</td>
-                          <td>
-                            {meal.isCompleted && (
-                              <Status statusColor="green">Concluída</Status>
-                            )}
-                            {meal.isDone && !meal.isCompleted && (
-                              <Status statusColor="red">Não finalizada</Status>
-                            )}
-                            {!meal.isCompleted && !meal.isDone && (
-                              <Status statusColor="yellow">Em andamento</Status>
-                            )}
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </Fragment>
-                )
-              })}
-            </tbody>
-          </table>
-        </HistoryList>
-      </HistoryContainer>
-    </>
+    <HistoryContainer>
+      <Box>
+        <h1>Histórico de refeições</h1>
+      </Box>
+      <HistoryList>
+        <table>
+          <thead>
+            <tr>
+              <th>Dia</th>
+              <th>Data</th>
+              <th>Refeição</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((meals) => {
+              return (
+                <Fragment key={meals.createdAt}>
+                  <tr>
+                    <td>{weekDays[new Date(meals.createdAt).getDay() + 1]}</td>
+                    <td>{new Date(meals.createdAt).toLocaleDateString()}</td>
+                    <td></td>
+                    <td></td>
+                    {/* <td>
+                      {meals.meals.map((meal) => {
+                        return Meals[meal.meal]
+                      })}
+                    </td> */}
+                  </tr>
+                  <tr key={'café'}>
+                    <td></td>
+                    <td></td>
+                    <td>Café</td>
+                    <td>
+                      {meals.meals.find((meal) => meal.meal === '0')
+                        ?.isCompleted && (
+                        <Status statusColor="green">Concluída</Status>
+                      )}
+                      {meals.meals.find((meal) => meal.meal === '0')?.isDone &&
+                        !meals.meals.find((meal) => meal.meal === '0')
+                          ?.isCompleted && (
+                          <Status statusColor="red">Não finalizada</Status>
+                        )}
+                      {!meals.meals.find((meal) => meal.meal === '0')
+                        ?.isCompleted &&
+                        !meals.meals.find((meal) => meal.meal === '0')
+                          ?.isDone && (
+                          <Status statusColor="yellow">Em andamento</Status>
+                        )}
+                    </td>
+                  </tr>
+                  <tr key={'almoço'}>
+                    <td></td>
+                    <td></td>
+                    <td>Almoço</td>
+                    <td>
+                      {meals.meals.find((meal) => meal.meal === '1')
+                        ?.isCompleted && (
+                        <Status statusColor="green">Concluída</Status>
+                      )}
+                      {meals.meals.find((meal) => meal.meal === '1')?.isDone &&
+                        !meals.meals.find((meal) => meal.meal === '1')
+                          ?.isCompleted && (
+                          <Status statusColor="red">Não finalizada</Status>
+                        )}
+                      {!meals.meals.find((meal) => meal.meal === '1')
+                        ?.isCompleted &&
+                        !meals.meals.find((meal) => meal.meal === '1')
+                          ?.isDone && (
+                          <Status statusColor="yellow">Em andamento</Status>
+                        )}
+                    </td>
+                  </tr>
+                  <tr key={'tarde'}>
+                    <td></td>
+                    <td></td>
+                    <td>Café da tarde</td>
+                    <td>
+                      {' '}
+                      {meals.meals.find((meal) => meal.meal === '2')
+                        ?.isCompleted && (
+                        <Status statusColor="green">Concluída</Status>
+                      )}
+                      {meals.meals.find((meal) => meal.meal === '2')?.isDone &&
+                        !meals.meals.find((meal) => meal.meal === '2')
+                          ?.isCompleted && (
+                          <Status statusColor="red">Não finalizada</Status>
+                        )}
+                      {!meals.meals.find((meal) => meal.meal === '2')
+                        ?.isCompleted &&
+                        !meals.meals.find((meal) => meal.meal === '2')
+                          ?.isDone && (
+                          <Status statusColor="yellow">Em andamento</Status>
+                        )}
+                    </td>
+                  </tr>
+                  <tr key={'janta'}>
+                    <td></td>
+                    <td></td>
+                    <td>Jantar</td>
+                    <td>
+                      {meals.meals.find((meal) => meal.meal === '3')
+                        ?.isCompleted && (
+                        <Status statusColor="green">Concluída</Status>
+                      )}
+                      {meals.meals.find((meal) => meal.meal === '3')?.isDone &&
+                        !meals.meals.find((meal) => meal.meal === '3')
+                          ?.isCompleted && (
+                          <Status statusColor="red">Não finalizada</Status>
+                        )}
+                      {!meals.meals.find((meal) => meal.meal === '3')
+                        ?.isCompleted &&
+                        !meals.meals.find((meal) => meal.meal === '3')
+                          ?.isDone && (
+                          <Status statusColor="yellow">Em andamento</Status>
+                        )}
+                    </td>
+                  </tr>
+                  <tr key={'ceia'}>
+                    <td></td>
+                    <td></td>
+                    <td>Ceia</td>
+                    <td>
+                      {meals.meals.find((meal) => meal.meal === '4')
+                        ?.isCompleted && (
+                        <Status statusColor="green">Concluída</Status>
+                      )}
+                      {meals.meals.find((meal) => meal.meal === '4')?.isDone &&
+                        !meals.meals.find((meal) => meal.meal === '4')
+                          ?.isCompleted && (
+                          <Status statusColor="red">Não finalizada</Status>
+                        )}
+                      {!meals.meals.find((meal) => meal.meal === '4')
+                        ?.isCompleted &&
+                        !meals.meals.find((meal) => meal.meal === '4')
+                          ?.isDone && (
+                          <Status statusColor="yellow">Em andamento</Status>
+                        )}
+                    </td>
+                  </tr>
+                </Fragment>
+              )
+            })}
+          </tbody>
+        </table>
+      </HistoryList>
+    </HistoryContainer>
   )
 }
 
@@ -150,8 +263,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         notFound: true,
       }
     }
-
-    console.log(items)
 
     await prisma.$queryRaw`
   WITH tasks AS (

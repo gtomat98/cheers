@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { LdsRipple } from './styles'
+import { LdsRipple, Container, Divisor } from './styles'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
@@ -35,9 +35,15 @@ export default function Home() {
   }
 
   return (
-    <LdsRipple>
-      <div />
-      <div />
-    </LdsRipple>
+    <Container>
+      <Divisor>
+        <h1>Sua dieta está sendo revisada!</h1>
+        <p>aguarde...</p>
+        <LdsRipple>
+          <div />
+          <div />
+        </LdsRipple>
+      </Divisor>
+    </Container>
   )
 }

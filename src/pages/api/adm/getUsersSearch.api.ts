@@ -5,7 +5,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  console.log('entrou')
   if (req.method !== 'GET') {
     return res.status(405).end()
   }
@@ -16,8 +15,10 @@ export default async function handler(
     const usersFound = await prisma.user.findMany({
       take: 5,
       where: {
-        isInactive: false,
-        gender: 'male' || 'female',
+        verified: true,
+        NOT: {
+          age: null,
+        },
         role: 'user',
         username: {
           contains: search as string,
@@ -31,12 +32,12 @@ export default async function handler(
         age: true,
         gender: true,
         avatar_url: true,
+        verified: true,
       },
     })
+
     return res.status(200).json({
       usersFound,
     })
-  } catch (err) {
-    console.log(err)
-  }
+  } catch (err) {}
 }

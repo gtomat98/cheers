@@ -3,6 +3,11 @@ import { getGoogleOAuthToken } from '@/lib/google'
 // eslint-disable-next-line camelcase
 import { google, tasks_v1 } from 'googleapis'
 
+import Lunch from '../../../../assets/Meals/luch.png'
+import Breakfast from '../../../../assets/Meals/breakfast.png'
+import Snack from '../../../../assets/Meals/snack.png'
+import Supper from '../../../../assets/Meals/ceia.png'
+
 import React, { useContext, useEffect, useState } from 'react'
 
 import {
@@ -20,9 +25,11 @@ import { Weekdays, Prisma, Meals as MealsType } from '@prisma/client'
 import { UserContext } from '@/contexts/userContext'
 import Card from './components/card'
 import { api } from '@/lib/axios'
+import { weekdays } from '../components/card'
 
 type Meal = {
   meal_id: string
+  task_id: string
   id: string
   created_at: string
   isDone: boolean
@@ -63,7 +70,6 @@ export default function Weekday({
       return meal
     })
     setWeekdayMeals(updatedMeals)
-    console.log(weekdayMeals)
   }
 
   async function handleMealChecked(
@@ -71,6 +77,7 @@ export default function Weekday({
     mealId: string,
     meal: MealsType,
     mealHistoricId: string,
+    taskId: string,
   ) {
     const { data } = await api.put('/fetch/updateTask', {
       mealId,
@@ -78,6 +85,7 @@ export default function Weekday({
       tasklist,
       title: meal,
       mealHistoricId,
+      taskId,
     })
 
     if (data.reload) {
@@ -94,7 +102,7 @@ export default function Weekday({
         const updatedMeals: WeekdayProps['weekdayMeals'] = weekdayMeals.map(
           (meal) => {
             const isChanged = data.meals.find(
-              (updatedMeal: Meal) => updatedMeal.id === meal.meal_id,
+              (updatedMeal: Meal) => updatedMeal.id === meal.task_id,
             )
             return isChanged
               ? {
@@ -128,7 +136,12 @@ export default function Weekday({
             width={100}
           />
           <header>
-            <Title>{weekday.charAt(0).toUpperCase() + weekday.slice(1)}</Title>
+            <Title>
+              {`Refeições - ${
+                weekdays[weekday].charAt(0).toUpperCase() +
+                weekdays[weekday].slice(1)
+              }`}
+            </Title>
             <MealMeter>
               <Meter>
                 <div></div>
@@ -148,17 +161,53 @@ export default function Weekday({
             $$tag: cards[weekday].tag,
           }}
         >
-          {weekdayMeals.map((meal) => {
-            return (
-              <Card
-                isCompleted={meal.isCompleted}
-                releaseCheck={handleCheck}
-                meal={meal}
-                releaseMealChecked={handleMealChecked}
-                key={meal.meal_id}
-              />
-            )
-          })}
+          <Card
+            isCompleted={
+              weekdayMeals.find((meal) => meal.meal === 'Café da manhã')
+                ?.isCompleted
+            }
+            releaseCheck={handleCheck}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Café da manhã')}
+            releaseMealChecked={handleMealChecked}
+            src={Breakfast}
+          />
+          <Card
+            isCompleted={
+              weekdayMeals.find((meal) => meal.meal === 'Almoço')?.isCompleted
+            }
+            releaseCheck={handleCheck}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Almoço')}
+            releaseMealChecked={handleMealChecked}
+            src={Lunch}
+          />
+          <Card
+            isCompleted={
+              weekdayMeals.find((meal) => meal.meal === 'Café da tarde')
+                ?.isCompleted
+            }
+            releaseCheck={handleCheck}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Café da tarde')}
+            releaseMealChecked={handleMealChecked}
+            src={Snack}
+          />
+          <Card
+            isCompleted={
+              weekdayMeals.find((meal) => meal.meal === 'Jantar')?.isCompleted
+            }
+            releaseCheck={handleCheck}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Jantar')}
+            releaseMealChecked={handleMealChecked}
+            src={Lunch}
+          />
+          <Card
+            isCompleted={
+              weekdayMeals.find((meal) => meal.meal === 'Ceia')?.isCompleted
+            }
+            releaseCheck={handleCheck}
+            meal={weekdayMeals.find((meal) => meal.meal === 'Ceia')}
+            releaseMealChecked={handleMealChecked}
+            src={Supper}
+          />
         </Meals>
       </Container>
     </>
@@ -191,9 +240,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const currentDate = new Date()
   const startOfWeek = new Date(currentDate)
   startOfWeek.setDate(currentDate.getDate() - currentDate.getDay())
+  startOfWeek.setHours(0, 0, 0, 0)
 
   const endOfWeek = new Date(currentDate)
   endOfWeek.setDate(currentDate.getDate() + (6 - currentDate.getDay()))
+  endOfWeek.setHours(0, 0, 0, 0)
 
   const api = google.tasks({
     version: 'v1',
@@ -226,7 +277,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const { data } = await api.tasks.list({
     tasklist,
-    showCompleted: true,
     showHidden: true,
   })
 
@@ -239,31 +289,38 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 
   const weekdayMeals = await prisma.$queryRaw`
-  WITH tasks AS (
+WITH tasks AS (
     SELECT *
     FROM (VALUES ${Prisma.raw(itemsToSqlArray(items).join(', '))})
       AS t ("id", "status", "completed", "title")
-  ),
-  updated_meals AS (
+),
+updated_meals AS (
     UPDATE "mealsHistoric" AS mh
-    SET "isCompleted" = t."status" = 'completed'
+    SET "isCompleted" = (CASE WHEN t."status" = 'completed' THEN true ELSE false END)
     FROM tasks t
-    WHERE mh."meal_id" = t."id"
+    WHERE t."id" = (
+        SELECT "task_id" FROM "meals" WHERE "id" = mh."meal_id" AND "isCurrent" = true
+    )
     RETURNING mh.*
-  )
-  SELECT
+)
+SELECT
     um.*,
     TO_CHAR(um."created_at", 'YYYY-MM-DD') as "created_at",
-    json_agg(json_build_object('id', f.id, 'food', f.food, 'quantity', f.quantity)) as "foods",
-    t."title" AS "meal"
-  FROM updated_meals um
-  JOIN tasks t ON um."meal_id" = t."id"
-  LEFT JOIN "foods" as f ON um."meal_id" = f."meal_id"
-  WHERE um."created_at" >= ${startOfWeek} AND
-        um."created_at" <= ${endOfWeek}
-  GROUP BY um.id, t."title", um."meal_id", f.id, f.food, f.quantity, um.created_at, um."isDone", um."isCompleted";
-`
-  console.log('AQUI:', weekdayMeals)
+    (
+        SELECT json_agg(json_build_object('id', f.id, 'food', f.food, 'quantity', f.quantity))
+        FROM "foods" as f
+        WHERE um."meal_id" = f."meal_id"
+    ) as "foods",
+    t."title" AS "meal",
+    t."id" AS "task_id",
+    t."status" AS "status"
+FROM updated_meals um
+JOIN tasks t ON (
+    SELECT "task_id" FROM "meals" WHERE "id" = um."meal_id" AND "isCurrent" = true
+) = t."id"
+WHERE um."created_at" >= ${startOfWeek} AND
+      um."created_at" <= ${endOfWeek}
+GROUP BY um.id, t."title", t."status", t."id", um."meal_id", um.created_at, um."isDone", um."isCompleted"`
 
   return {
     props: {

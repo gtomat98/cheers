@@ -8,7 +8,6 @@ export default async function handler(
   if (req.method !== 'PUT') {
     return res.status(405).end()
   }
-  console.log('entrou')
 
   // const currentDate = new Date()
   // const dateTime = currentDate.toLocaleString()
@@ -70,7 +69,6 @@ FROM (
     await prisma.$executeRaw`COMMIT`
     res.status(200).end()
   } catch (error) {
-    console.log(error)
     await prisma.$executeRaw`ROLLBACK`
     res.status(500).json({
       error,

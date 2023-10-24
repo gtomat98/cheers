@@ -1,11 +1,8 @@
-// import { getBasalMetabolismRate } from '@/utils/getBasalMetabolismRate'
-// import { shouldIncreaseOrDecreaseCalories } from '@/utils/shouldIncreaseOrDecreaseCalories'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { z } from 'zod'
 import { buildNextAuthOptions } from '../auth/[...nextauth].api'
 import { prisma } from '@/lib/prisma'
-import { getToken } from 'next-auth/jwt'
 
 const physicalInformationFormSchema = z.object({
   weight: z.number().min(20).max(160),
@@ -33,38 +30,39 @@ export default async function handler(
     buildNextAuthOptions(req, res),
   )
 
-  // const session = await getToken({ req })
-
   if (!session) {
     return res.status(401).end()
   }
 
+  const userDatabaseData = await prisma.user.findUnique({
+    where: {
+      id: session.token.id,
+    },
+
+    select: {
+      age: true,
+      height: true,
+      weight: true,
+      gender: true,
+      activity_factor: true,
+    },
+  })
+
   const { age, height, weight, activityFactor, gender } =
     physicalInformationFormSchema.parse(req.body)
 
-  // const totalCaloriesToMantain = getBasalMetabolismRate({
-  //   gender,
-  //   age,
-  //   height,
-  //   weight,
-  //   activityFactor,
-  // })
+  if (
+    userDatabaseData &&
+    age === userDatabaseData.age &&
+    height === userDatabaseData.height &&
+    weight === userDatabaseData.weight &&
+    activityFactor === userDatabaseData.activity_factor &&
+    gender === userDatabaseData.gender
+  ) {
+    return res.status(401).end()
+  }
 
-  // const bodyMassIndex = shouldIncreaseOrDecreaseCalories(height, weight)
-
-  // const idealWeight = {
-  //   1() {
-  //     // eslint-disable-next-line prettier/prettier
-  //     return totalCaloriesToMantain - (totalCaloriesToMantain / 10)
-  //   },
-  //   [-1]() {
-  //     // eslint-disable-next-line prettier/prettier
-  //     return totalCaloriesToMantain + (totalCaloriesToMantain / 10)
-  //   },
-  //   0() {
-  //     return totalCaloriesToMantain
-  //   },
-  // }
+  const actualDate = new Date(Date.now())
 
   await prisma.user.update({
     where: {
@@ -77,6 +75,8 @@ export default async function handler(
       gender,
       age,
       activity_factor: activityFactor,
+      last_update: actualDate.toISOString(),
+      is_diet_updated: false,
     },
   })
 
