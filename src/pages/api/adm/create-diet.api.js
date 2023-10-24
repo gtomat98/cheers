@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma'
 import { google } from 'googleapis'
 
 export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).end()
+  }
+
   const data = req.body
 
   const weekdaysTranslate = {
@@ -143,8 +147,6 @@ export default async function handler(req, res) {
       is_diet_updated: true,
     },
   })
-
-  console.log('deu certo :)')
 
   return res.status(200).json({
     data,
