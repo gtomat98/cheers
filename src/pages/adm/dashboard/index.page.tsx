@@ -311,6 +311,6 @@ export const getStaticProps: GetStaticProps = async () => {
       users: formattedUsers,
       usersToUpdate: formattedUsersToUpdate,
     },
-    revalidate: 60 * 60 * 24, // 1 day
+    revalidate: 10, // 1 day
   }
 }
