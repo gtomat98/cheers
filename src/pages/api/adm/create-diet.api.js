@@ -137,6 +137,8 @@ export default async function handler(req, res) {
   ) AS m;
 `
 
+  console.log('ue')
+
   await prisma.user.update({
     where: {
       id: data.userId,
