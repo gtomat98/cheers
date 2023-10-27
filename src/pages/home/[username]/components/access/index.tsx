@@ -37,7 +37,7 @@ export default function DialogDemo({ user_id }: DialogDemoProps) {
 
   return (
     <Dialog.Root open={isOpen}>
-      <Dialog.Portal>
+      <Dialog.Portal style={{ overflow: 'auto' }}>
         <DialogOverlay />
 
         <DialogContent>
@@ -62,7 +62,8 @@ export default function DialogDemo({ user_id }: DialogDemoProps) {
                   css={{
                     marginTop: 25,
                     justifyContent: 'space-between',
-                    alignItems: 'center',
+                    width: '100%',
+                    alignItems: 'start',
                     gap: 24,
                   }}
                 >
@@ -148,44 +149,74 @@ const DialogOverlay = styled(Dialog.Overlay, {
   backgroundColor: blackA.blackA11,
   position: 'fixed',
   inset: 0,
+  zIndex: 10,
   animation: `${overlayShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
+  overflow: 'auto',
 })
 
 const DialogContent = styled(Dialog.Content, {
+  userSelect: 'none',
+  zIndex: 10,
   position: 'fixed',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '90vw',
+  width: '100vw',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  maxWidth: '800px',
-  maxHeight: '85vh',
-  padding: 25,
+  height: '100vh',
+  boxSizing: 'border-box',
+  padding: 16,
   animation: `${contentShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
   '&:focus': { outline: 'none' },
+
+  '@media (max-width: 600px)': {
+    padding: 12,
+  },
 })
 
 const Content = styled('div', {
   borderRadius: 6,
   boxShadow:
     'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  width: '80%',
   maxWidth: '450px',
-  maxHeight: '85vh',
+  maxHeight: '100%',
   padding: 25,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
   background:
     'linear-gradient(19deg, rgba(14,12,31 ,1), rgba(49, 43, 93, 0.8))',
+  img: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+  },
 })
 
 const DialogTitle = styled(Dialog.Title, {
   margin: 0,
   fontWeight: 500,
   color: '$textTitle',
-  fontSize: 17,
+  fontSize: 14,
+
+  '@media (max-width: 600px)': {
+    fontSize: 12,
+  },
+  '@media (max-height: 600px)': {
+    fontSize: 12,
+  },
 })
 
-const Flex = styled('div', { display: 'flex' })
+const Flex = styled('div', {
+  display: 'flex',
+  '@media (max-width: 600px)': {
+    flexDirection: 'column',
+    gap: 4,
+  },
+})
 
 const Button = styled('button', {
   all: 'unset',
@@ -194,11 +225,18 @@ const Button = styled('button', {
   justifyContent: 'center',
   borderRadius: 4,
   padding: '0 15px',
+  boxSizing: 'border-box',
   fontSize: 15,
   lineHeight: 1,
   fontWeight: 500,
   height: 35,
   cursor: 'pointer',
+
+  '@media (max-width: 600px)': {
+    width: '100%',
+    padding: '0 15px',
+    fontSize: 12,
+  },
 
   variants: {
     variant: {

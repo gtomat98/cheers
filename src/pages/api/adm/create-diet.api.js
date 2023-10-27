@@ -9,6 +9,8 @@ export default async function handler(req, res) {
 
   const data = req.body
 
+  console.log(data.data.user_id)
+
   const weekdaysTranslate = {
     sunday: 'Domingo',
     monday: 'Segunda',
@@ -41,7 +43,7 @@ export default async function handler(req, res) {
 
   const tasks = google.tasks({
     version: 'v1',
-    auth: await getGoogleOAuthToken(data.data.user_id),
+    auth: await getGoogleOAuthToken(data.userId),
   })
 
   async function createTaskList(weekday) {

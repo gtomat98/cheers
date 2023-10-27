@@ -5,7 +5,7 @@ export const HeaderFixed = styled('div', {
   width: '100%',
   position: 'fixed',
   top: 0,
-  zIndex: 100000000000000,
+  zIndex: 10,
 })
 
 export const HeaderContainer = styled('div', {

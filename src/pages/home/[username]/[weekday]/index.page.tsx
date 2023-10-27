@@ -161,53 +161,64 @@ export default function Weekday({
             $$tag: cards[weekday].tag,
           }}
         >
-          <Card
-            isCompleted={
-              weekdayMeals.find((meal) => meal.meal === 'Café da manhã')
-                ?.isCompleted!
-            }
-            releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Café da manhã')!}
-            releaseMealChecked={handleMealChecked}
-            src={Breakfast}
-          />
-          <Card
-            isCompleted={
-              weekdayMeals.find((meal) => meal.meal === 'Almoço')?.isCompleted!
-            }
-            releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Almoço')!}
-            releaseMealChecked={handleMealChecked}
-            src={Lunch}
-          />
-          <Card
-            isCompleted={
-              weekdayMeals.find((meal) => meal.meal === 'Café da tarde')
-                ?.isCompleted!
-            }
-            releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Café da tarde')!}
-            releaseMealChecked={handleMealChecked}
-            src={Snack}
-          />
-          <Card
-            isCompleted={
-              weekdayMeals.find((meal) => meal.meal === 'Jantar')?.isCompleted!
-            }
-            releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Jantar')!}
-            releaseMealChecked={handleMealChecked}
-            src={Lunch}
-          />
-          <Card
-            isCompleted={
-              weekdayMeals.find((meal) => meal.meal === 'Ceia')?.isCompleted!
-            }
-            releaseCheck={handleCheck}
-            meal={weekdayMeals.find((meal) => meal.meal === 'Ceia')!}
-            releaseMealChecked={handleMealChecked}
-            src={Supper}
-          />
+          {weekdayMeals.length === 5 && (
+            <>
+              <Card
+                isCompleted={
+                  weekdayMeals.find((meal) => meal.meal === 'Café da manhã')
+                    ?.isCompleted!
+                }
+                releaseCheck={handleCheck}
+                meal={
+                  weekdayMeals.find((meal) => meal.meal === 'Café da manhã')!
+                }
+                releaseMealChecked={handleMealChecked}
+                src={Breakfast}
+              />
+              <Card
+                isCompleted={
+                  weekdayMeals.find((meal) => meal.meal === 'Almoço')
+                    ?.isCompleted!
+                }
+                releaseCheck={handleCheck}
+                meal={weekdayMeals.find((meal) => meal.meal === 'Almoço')!}
+                releaseMealChecked={handleMealChecked}
+                src={Lunch}
+              />
+              <Card
+                isCompleted={
+                  weekdayMeals.find((meal) => meal.meal === 'Café da tarde')
+                    ?.isCompleted!
+                }
+                releaseCheck={handleCheck}
+                meal={
+                  weekdayMeals.find((meal) => meal.meal === 'Café da tarde')!
+                }
+                releaseMealChecked={handleMealChecked}
+                src={Snack}
+              />
+              <Card
+                isCompleted={
+                  weekdayMeals.find((meal) => meal.meal === 'Jantar')
+                    ?.isCompleted!
+                }
+                releaseCheck={handleCheck}
+                meal={weekdayMeals.find((meal) => meal.meal === 'Jantar')!}
+                releaseMealChecked={handleMealChecked}
+                src={Lunch}
+              />
+              <Card
+                isCompleted={
+                  weekdayMeals.find((meal) => meal.meal === 'Ceia')
+                    ?.isCompleted!
+                }
+                releaseCheck={handleCheck}
+                meal={weekdayMeals.find((meal) => meal.meal === 'Ceia')!}
+                releaseMealChecked={handleMealChecked}
+                src={Supper}
+              />
+            </>
+          )}
         </Meals>
       </Container>
     </>

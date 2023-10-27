@@ -62,7 +62,7 @@ export default function ConnectGoogle() {
   async function handleForm(data: physicalInformationFormData) {
     const { age, gender, height, weight, activityFactor } = data
     try {
-      const { data } = await api.post('/users/physical-information', {
+      await api.post('/users/physical-information', {
         age,
         height,
         weight,
@@ -70,7 +70,7 @@ export default function ConnectGoogle() {
         gender,
       })
 
-      await router.push(`/home/${data.username}`)
+      await router.push(`/loading`)
     } catch (err) {
       if (err instanceof AxiosError && err?.response?.data?.message) {
         alert(err.response.data.message)
