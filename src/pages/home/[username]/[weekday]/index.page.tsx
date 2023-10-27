@@ -94,29 +94,31 @@ export default function Weekday({
   }
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const { data } = await api.post('/fetch/getUpdatedTasks', {
-          tasklist,
-        })
-        const updatedMeals: WeekdayProps['weekdayMeals'] = weekdayMeals.map(
-          (meal) => {
-            const isChanged = data.meals.find(
-              (updatedMeal: Meal) => updatedMeal.id === meal.task_id,
-            )
-            return isChanged
-              ? {
-                  ...meal,
-                  isCompleted: isChanged.status === 'completed',
-                }
-              : meal
-          },
-        )
-        setWeekdayMeals(updatedMeals)
-      } catch (err) {}
-    }, 5000)
+    if (weekdayMeals.length === 5) {
+      const interval = setInterval(async () => {
+        try {
+          const { data } = await api.post('/fetch/getUpdatedTasks', {
+            tasklist,
+          })
+          const updatedMeals: WeekdayProps['weekdayMeals'] = weekdayMeals.map(
+            (meal) => {
+              const isChanged = data.meals.find(
+                (updatedMeal: Meal) => updatedMeal.id === meal.task_id,
+              )
+              return isChanged
+                ? {
+                    ...meal,
+                    isCompleted: isChanged.status === 'completed',
+                  }
+                : meal
+            },
+          )
+          setWeekdayMeals(updatedMeals)
+        } catch (err) {}
+      }, 5000)
 
-    return () => clearInterval(interval) // Limpar o intervalo quando o componente for desmontado
+      return () => clearInterval(interval) // Limpar o intervalo quando o componente for desmontado
+    }
   }, [tasklist, weekdayMeals])
 
   return (
