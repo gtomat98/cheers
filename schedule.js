@@ -38,7 +38,7 @@ var _this = this;
 var cron = require('node-cron');
 var axios = require('axios');
 var api = axios.create({
-    baseURL: 'http://localhost:3000/api',
+    baseURL: 'https://cheers-seven.vercel.app/api',
 });
 var executeTask = function () { return __awaiter(_this, void 0, void 0, function () {
     var FetchApi, currentDate, dayOfWeek, isStartOfWeek;

@@ -1,4 +1,6 @@
-import axios from 'axios'
+const cron = require('node-cron')
+const axios = require('axios')
+
 const api = axios.create({
   baseURL: 'https://cheers-seven.vercel.app/api',
 })
@@ -9,7 +11,7 @@ type FetchProps = (
   data?: any,
 ) => Promise<void>
 
-export async function executeTask() {
+const executeTask = async () => {
   const FetchApi: FetchProps = async (url, method, data) => {
     try {
       await api[method](`${url}`, {
@@ -33,3 +35,6 @@ export async function executeTask() {
 
   FetchApi('/server/blockPastMeals', 'post', currentDate)
 }
+
+// Agendar para executar todos os dias à meia-noite
+cron.schedule('0 0 * * *', executeTask)
