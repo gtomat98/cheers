@@ -301,6 +301,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }
   }
 
+  console.log(startOfWeek, endOfWeek)
+
   const weekdayMeals = await prisma.$queryRaw`
 WITH tasks AS (
     SELECT *
@@ -334,6 +336,8 @@ JOIN tasks t ON (
 WHERE um."created_at" >= ${startOfWeek} AND
       um."created_at" <= ${endOfWeek}
 GROUP BY um.id, t."title", t."status", t."id", um."meal_id", um.created_at, um."isDone", um."isCompleted"`
+
+  console.log(weekdayMeals)
 
   return {
     props: {
