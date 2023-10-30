@@ -60,7 +60,7 @@ export default function Historic({ data }: HistoricProps) {
                 <Fragment key={meals.createdAt}>
                   <tr>
                     <td>{weekDays[new Date(meals.createdAt).getDay() + 1]}</td>
-                    <td>{new Date(meals.createdAt).toLocaleDateString()}</td>
+                    <td>{meals.createdAt}</td>
                     <td></td>
                     <td></td>
                     {/* <td>
