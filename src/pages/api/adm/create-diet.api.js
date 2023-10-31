@@ -9,8 +9,6 @@ export default async function handler(req, res) {
 
   const data = req.body
 
-  console.log(data.data.user_id)
-
   const weekdaysTranslate = {
     sunday: 'Domingo',
     monday: 'Segunda',
@@ -138,8 +136,6 @@ export default async function handler(req, res) {
     WHERE "user_id" = ${data.userId} AND "weekday"::text >= ${today}
   ) AS m;
 `
-
-  console.log('ue')
 
   await prisma.user.update({
     where: {

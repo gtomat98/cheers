@@ -207,6 +207,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const session = await prisma.user.findFirst({
     where: {
       username: `${username}`,
+      isInactive: false,
     },
   })
 

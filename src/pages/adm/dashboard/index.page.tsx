@@ -273,6 +273,7 @@ export const getStaticProps: GetStaticProps = async () => {
     where: {
       role: 'user',
       verified: false,
+      isInactive: false,
       NOT: {
         age: null,
       },
@@ -283,6 +284,7 @@ export const getStaticProps: GetStaticProps = async () => {
     where: {
       role: 'user',
       verified: true,
+      isInactive: false,
       NOT: {
         age: null,
       },

@@ -15,6 +15,7 @@ export default async function handler(
     const usersFound = await prisma.user.findMany({
       take: 5,
       where: {
+        isInactive: false,
         verified: true,
         NOT: {
           age: null,

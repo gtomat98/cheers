@@ -91,9 +91,9 @@ model food {
 
 model User {
   id              String    @id @default(uuid())
-  username        String    @unique
+  username        String
   name            String
-  email           String?   @unique
+  email           String?
   avatar_url      String?
   is_diet_updated Boolean?
   last_update     DateTime?

@@ -21,15 +21,23 @@ export default async function handler(
     return res.status(401).end()
   }
 
-  await prisma.user.update({
-    where: {
-      id: session.token.id,
-    },
+  await prisma.$transaction([
+    prisma.user.update({
+      where: {
+        id: session.token.id,
+      },
 
-    data: {
-      isInactive: true,
-    },
-  })
+      data: {
+        isInactive: true,
+      },
+    }),
+
+    prisma.account.deleteMany({
+      where: {
+        user_id: session.token.id,
+      },
+    }),
+  ])
 
   return res.status(200).end()
 }

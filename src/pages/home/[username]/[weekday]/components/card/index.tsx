@@ -17,6 +17,7 @@ import {
 } from './styles'
 
 interface CardProps {
+  isTheSameDay: boolean
   isCompleted: boolean
   meal: {
     id: string
@@ -53,6 +54,7 @@ export const meals = {
 }
 
 export default function Card({
+  isTheSameDay,
   meal,
   releaseCheck,
   isCompleted,
@@ -84,7 +86,7 @@ export default function Card({
                   <CheckboxRoot
                     defaultChecked={isCompleted}
                     checked={isCompleted}
-                    disabled={meal.isDone}
+                    disabled={meal.isDone || isTheSameDay}
                     onCheckedChange={(e: boolean) =>
                       handleReleaseMealChecked(e)
                     }

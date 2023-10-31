@@ -44,6 +44,7 @@ type Meal = {
 }
 
 interface WeekdayProps {
+  isTheSameDay: boolean
   weekdayMeals: Meal[]
   tasklist: string
   username: string
@@ -51,6 +52,7 @@ interface WeekdayProps {
 }
 
 export default function Weekday({
+  isTheSameDay,
   weekdayMeals: Initial,
   weekday,
   tasklist,
@@ -94,7 +96,7 @@ export default function Weekday({
   }
 
   useEffect(() => {
-    if (weekdayMeals.length === 5) {
+    if (weekdayMeals.length === 5 && isTheSameDay) {
       const interval = setInterval(async () => {
         try {
           const { data } = await api.post('/fetch/getUpdatedTasks', {
@@ -119,7 +121,7 @@ export default function Weekday({
 
       return () => clearInterval(interval) // Limpar o intervalo quando o componente for desmontado
     }
-  }, [tasklist, weekdayMeals])
+  }, [tasklist, weekdayMeals, isTheSameDay])
 
   return (
     <>
@@ -176,6 +178,7 @@ export default function Weekday({
                 }
                 releaseMealChecked={handleMealChecked}
                 src={Breakfast}
+                isTheSameDay={!isTheSameDay}
               />
               <Card
                 isCompleted={
@@ -186,6 +189,7 @@ export default function Weekday({
                 meal={weekdayMeals.find((meal) => meal.meal === 'Almoço')!}
                 releaseMealChecked={handleMealChecked}
                 src={Lunch}
+                isTheSameDay={!isTheSameDay}
               />
               <Card
                 isCompleted={
@@ -198,6 +202,7 @@ export default function Weekday({
                 }
                 releaseMealChecked={handleMealChecked}
                 src={Snack}
+                isTheSameDay={!isTheSameDay}
               />
               <Card
                 isCompleted={
@@ -208,6 +213,7 @@ export default function Weekday({
                 meal={weekdayMeals.find((meal) => meal.meal === 'Jantar')!}
                 releaseMealChecked={handleMealChecked}
                 src={Lunch}
+                isTheSameDay={!isTheSameDay}
               />
               <Card
                 isCompleted={
@@ -218,6 +224,7 @@ export default function Weekday({
                 meal={weekdayMeals.find((meal) => meal.meal === 'Ceia')!}
                 releaseMealChecked={handleMealChecked}
                 src={Supper}
+                isTheSameDay={!isTheSameDay}
               />
             </>
           )}
@@ -238,9 +245,22 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const username = String(params!.username)
   const weekday = params!.weekday as Weekdays
 
-  const user = await prisma.user.findUnique({
+  const translateDate = {
+    sunday: 0,
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6,
+  }
+
+  const isTheSameDay = translateDate[weekday] === new Date().getDay()
+
+  const user = await prisma.user.findFirst({
     where: {
       username,
+      isInactive: false,
     },
   })
 
@@ -301,22 +321,56 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }
   }
 
-  console.log(startOfWeek, endOfWeek)
-
-  const weekdayMeals = await prisma.$queryRaw`
+  const weekdayMeals = isTheSameDay
+    ? await prisma.$queryRaw`
+  WITH tasks AS (
+      SELECT *
+      FROM (VALUES ${Prisma.raw(itemsToSqlArray(items).join(', '))})
+        AS t ("id", "status", "completed", "title")
+  ),
+  updated_meals AS (
+      UPDATE "mealsHistoric" AS mh
+      SET "isCompleted" = (CASE WHEN t."status" = 'completed' THEN true ELSE false END)
+      FROM tasks t
+      WHERE t."id" = (
+          SELECT "task_id" FROM "meals" WHERE "id" = mh."meal_id" AND "isCurrent" = true
+      )
+      RETURNING mh.*
+  )
+  SELECT
+      um.*,
+      TO_CHAR(um."created_at", 'YYYY-MM-DD') as "created_at",
+      (
+          SELECT json_agg(json_build_object('id', f.id, 'food', f.food, 'quantity', f.quantity))
+          FROM "foods" as f
+          WHERE um."meal_id" = f."meal_id"
+      ) as "foods",
+      t."title" AS "meal",
+      t."id" AS "task_id",
+      t."status" AS "status"
+  FROM updated_meals um
+  JOIN tasks t ON (
+      SELECT "task_id" FROM "meals" WHERE "id" = um."meal_id" AND "isCurrent" = true
+  ) = t."id"
+  WHERE um."created_at" >= ${startOfWeek} AND
+        um."created_at" <= ${endOfWeek}
+  GROUP BY um.id, t."title", t."status", t."id", um."meal_id", um.created_at, um."isDone", um."isCompleted"`
+    : await prisma.$queryRaw`
 WITH tasks AS (
     SELECT *
     FROM (VALUES ${Prisma.raw(itemsToSqlArray(items).join(', '))})
       AS t ("id", "status", "completed", "title")
 ),
 updated_meals AS (
-    UPDATE "mealsHistoric" AS mh
-    SET "isCompleted" = (CASE WHEN t."status" = 'completed' THEN true ELSE false END)
-    FROM tasks t
-    WHERE t."id" = (
-        SELECT "task_id" FROM "meals" WHERE "id" = mh."meal_id" AND "isCurrent" = true
+    SELECT mh.*
+    FROM "mealsHistoric" AS mh
+    WHERE EXISTS (
+        SELECT 1
+        FROM tasks t
+        WHERE t."id" = (
+            SELECT "task_id" FROM "meals" WHERE mh."meal_id" = "meals"."id" AND "isCurrent" = true
+        )
     )
-    RETURNING mh.*
 )
 SELECT
     um.*,
@@ -335,12 +389,12 @@ JOIN tasks t ON (
 ) = t."id"
 WHERE um."created_at" >= ${startOfWeek} AND
       um."created_at" <= ${endOfWeek}
-GROUP BY um.id, t."title", t."status", t."id", um."meal_id", um.created_at, um."isDone", um."isCompleted"`
-
-  console.log(weekdayMeals)
+GROUP BY um.id, t."title", t."status", t."id", um."meal_id", um.created_at, um."isDone", um."isCompleted"
+`
 
   return {
     props: {
+      isTheSameDay,
       weekdayMeals,
       username,
       weekday,

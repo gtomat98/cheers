@@ -71,6 +71,7 @@ var executeTask = function () { return __awaiter(_this, void 0, void 0, function
         if (isStartOfWeek) {
             FetchApi('/server/insertNewMeals', 'put');
         }
+        FetchApi('/server/syncDailyTasks', 'put');
         FetchApi('/server/updateInactiveUsers', 'post');
         FetchApi('/server/blockPastMeals', 'post', currentDate);
         return [2 /*return*/];

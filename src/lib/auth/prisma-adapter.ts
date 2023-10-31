@@ -49,7 +49,7 @@ export function PrismaAdapter(
         },
       })
 
-      if (!user) {
+      if (!user || user.isInactive) {
         return null
       }
 
@@ -65,9 +65,10 @@ export function PrismaAdapter(
     },
 
     async getUserByEmail(email) {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.user.findFirst({
         where: {
           email,
+          isInactive: false,
         },
       })
       if (!user) {
