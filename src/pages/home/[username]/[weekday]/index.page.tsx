@@ -19,7 +19,7 @@ import {
   Meter,
   Title,
 } from './styles'
-import { GetStaticPaths, GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import { prisma } from '@/lib/prisma'
 import { Weekdays, Prisma } from '@prisma/client'
 import { UserContext } from '@/contexts/userContext'
@@ -234,14 +234,8 @@ export default function Weekday({
   )
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: 'blocking',
-  }
-}
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { params } = context
   const username = String(params!.username)
   const weekday = params!.weekday as Weekdays
 
@@ -400,6 +394,5 @@ GROUP BY um.id, t."title", t."status", t."id", um."meal_id", um.created_at, um."
       weekday,
       tasklist,
     },
-    revalidate: 1, // 1 day
   }
 }
