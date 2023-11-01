@@ -90,6 +90,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         id: user.id,
       },
     },
-    revalidate: 60 * 60 * 24, // 1 day
+    revalidate: user.first_access ? 10 : 60 * 60 * 1, // 1 day
   }
 }
