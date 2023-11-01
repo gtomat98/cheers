@@ -21,5 +21,6 @@ declare module 'next-auth' {
     username: string
     avatarUrl: string
     lastUpdate: Date
+    firstAccess: boolean
   }
 }

@@ -337,7 +337,7 @@ const DialogItem = React.forwardRef((props, forwardedRef) => {
   const formattedDate = pastDate.toISOString()
   const itsUpdatable =
     // eslint-disable-next-line prettier/prettier
-    session.data.lastUpdate !== null
+    session.data?.lastUpdate
       ? session.data.lastUpdate < formattedDate
       : true
 

@@ -8,12 +8,12 @@ import { useContext } from 'react'
 import { UserContext } from '@/contexts/userContext'
 import Card from './components/card'
 import DialogDemo from './components/access'
+import { useSession } from 'next-auth/react'
 
 interface HomeProps {
   user: {
     name: string
     avatarUrl: string
-    firstAccess: boolean
     id: string
   }
 }
@@ -27,11 +27,13 @@ export default function Home({ user }: HomeProps) {
     },
   })
 
-  console.log('AQUI:', user)
+  const session = useSession()
 
   return (
     <>
-      {user.firstAccess && <DialogDemo user_id={user.id} />}
+      {session.data && session.data.firstAccess && (
+        <DialogDemo user_id={user.id} />
+      )}
       <Container>
         <Box>
           <Title>
@@ -86,10 +88,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       user: {
         name: user.name,
         avatarUrl: user.avatar_url,
-        firstAccess: user.first_access,
         id: user.id,
       },
     },
-    revalidate: user.first_access ? 10 : 60 * 60 * 1, // 1 day
+    revalidate: 60 * 60 * 12, // 1/2 day
   }
 }

@@ -74,6 +74,7 @@ export function buildNextAuthOptions(
         }
         return {
           ...user,
+          firstAccess: userDatabase?.first_access,
           verified: userDatabase?.verified,
           height: userDatabase?.height,
           weight: userDatabase?.weight,
@@ -99,6 +100,7 @@ export function buildNextAuthOptions(
           username: user?.username,
           avatarUrl: user?.avatar_url,
           lastUpdate: user?.last_update,
+          firstAccess: user?.first_access,
         }
       },
     },
