@@ -60,6 +60,7 @@ export default function Weekday({
   const [weekdayMeals, setWeekdayMeals] =
     useState<WeekdayProps['weekdayMeals']>(Initial)
   const { cards } = useContext(UserContext)
+  const [isApiInProcess, setIsApiInProcess] = useState(false)
   const meter = weekdayMeals.filter((meal) => meal.isCompleted).length
 
   function handleCheck(mealId: string, isChecked: boolean) {
@@ -81,6 +82,7 @@ export default function Weekday({
     mealHistoricId: string,
     taskId: string,
   ) {
+    setIsApiInProcess(true)
     const { data } = await api.put('/fetch/updateTask', {
       mealId,
       isChecked,
@@ -89,6 +91,7 @@ export default function Weekday({
       mealHistoricId,
       taskId,
     })
+    setIsApiInProcess(false)
 
     if (data.reload) {
       window.location.reload()
@@ -96,7 +99,7 @@ export default function Weekday({
   }
 
   useEffect(() => {
-    if (weekdayMeals.length === 5 && isTheSameDay) {
+    if (weekdayMeals.length === 5 && isTheSameDay && !isApiInProcess) {
       const interval = setInterval(async () => {
         try {
           const { data } = await api.post('/fetch/getUpdatedTasks', {
@@ -121,7 +124,7 @@ export default function Weekday({
 
       return () => clearInterval(interval) // Limpar o intervalo quando o componente for desmontado
     }
-  }, [tasklist, weekdayMeals, isTheSameDay])
+  }, [tasklist, weekdayMeals, isTheSameDay, isApiInProcess])
 
   return (
     <>
