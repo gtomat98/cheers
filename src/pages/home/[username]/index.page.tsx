@@ -27,6 +27,8 @@ export default function Home({ user }: HomeProps) {
     },
   })
 
+  console.log('AQUI:', user)
+
   return (
     <>
       {user.firstAccess && <DialogDemo user_id={user.id} />}
@@ -76,6 +78,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       notFound: true,
     }
   }
+
+  console.log(user)
 
   return {
     props: {
