@@ -400,6 +400,6 @@ GROUP BY um.id, t."title", t."status", t."id", um."meal_id", um.created_at, um."
       weekday,
       tasklist,
     },
-    revalidate: 60 * 60 * 24, // 1 day
+    revalidate: 1, // 1 day
   }
 }
